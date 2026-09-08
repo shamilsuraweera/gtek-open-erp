@@ -7,12 +7,14 @@ function App() {
   const [dbValue, setDbValue] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3000/")
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3000";
+
+    fetch(`${apiUrl}/`)
       .then((res) => res.text())
       .then(() => setApiStatus("Connected"))
       .catch(() => setApiStatus("Failed"));
 
-    fetch("http://localhost:3000/db-test")
+    fetch(`${apiUrl}/db-test`)
       .then((res) => res.json())
       .then((data) => {
         setDbStatus("Connected");

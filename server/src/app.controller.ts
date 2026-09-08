@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { DatabaseService } from './database.service';
+import { DatabaseService } from './database/database.service';
 
 @Controller()
 export class AppController {
@@ -16,7 +16,15 @@ export class AppController {
 
   @Get('db-test')
   async testDb() {
-    const result = await this.db.pool.request().query('SELECT 1 AS test');
-    return result.recordset;
+    if (!this.db.pool) {
+      return { status: 'error', message: 'Database connection pool is not initialized. Check server logs.' };
+    }
+    
+    try {
+      const result = await this.db.pool.request().query('SELECT 1 AS test');
+      return result.recordset;
+    } catch (error) {
+      return { status: 'error', message: 'Database query failed', details: error.message };
+    }
   }
 }

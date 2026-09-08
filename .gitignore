@@ -1,81 +1,61 @@
-# -------------------------
-# Global Node / TypeScript
-# -------------------------
+# ==========================================
+# G-TEK ERP Global .gitignore
+# ==========================================
+
+# 1. Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# 2. Build Artifacts & Caches
 dist/
 build/
 .tmp/
 temp/
+.eslintcache
+*.tsbuildinfo
+.metro-cache/
+
+# 3. Testing
+coverage/
+
+# 4. Environment & Secrets (CRITICAL)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+.npmrc
+secrets.json
+
+# 5. Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# TypeScript
-*.tsbuildinfo
-
-# Environment files
-.env
-.env.*
-!.env.example
-
-# -------------------------
-# Backend (NestJS)
-# -------------------------
-/server/dist/
-/server/node_modules/
-/server/.env
-/server/.env.*
-
-# -------------------------
-# Frontend (React Web)
-# -------------------------
-/client/node_modules/
-/client/dist/
-/client/.env
-/client/.env.*
-
-# -------------------------
-# Mobile (React Native)
-# -------------------------
-/mobile/node_modules/
-/mobile/android/
-/mobile/ios/
-/mobile/.expo/
-/mobile/.env
-/mobile/.env.*
-
-# Metro bundler cache
-.expo/
-.expo-shared/
-.expo/*
-.expo-shared/*
-/mobile/.expo/*
-/mobile/.expo-shared/*
-
-# -------------------------
-# OS / Editor files
-# -------------------------
+# 6. OS / Editor / System Files
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
 *.swp
+*.swo
 
-# -------------------------
-# GitHub Actions
-# -------------------------
-# (No ignore needed unless you generate artifacts)
-.github/*.log
+# 7. Mobile (React Native / Expo specific)
+.expo/
+.expo-shared/
+/mobile/android/
+/mobile/ios/
 
-# -------------------------
-# Azure / CI Artifacts
-# -------------------------
+# 8. Cloud / CI Artifacts
 .azure/
 *.publishsettings
 *.azureconfig
+.github/*.log
 
-# -------------------------
+# 9. Examples
 example.server.gitignore
 example.client.gitignore

@@ -10,7 +10,7 @@ async function bootstrap() {
       'http://127.0.0.1:3001',
       'http://192.168.8.197:3001'
     ],
-    methods: 'GET,POST,PUT,DELETE',
+    methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     credentials: true,
   });
 
