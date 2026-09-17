@@ -7,6 +7,9 @@ import FinanceLayout from "./finance/FinanceLayout";
 import FinanceSettings from "./finance/FinanceSettings";
 import JournalEntries from "./finance/JournalEntries";
 import Reports from "./finance/Reports";
+import InventoryLayout from "./inventory/InventoryLayout";
+import ProductCategories from "./inventory/ProductCategories";
+import Products from "./inventory/Products";
 import "./App.css";
 
 function App() {
@@ -35,6 +38,18 @@ function App() {
             <Route path="settings" element={<FinanceSettings />} />
             <Route path="journal-entries" element={<JournalEntries />} />
             <Route path="reports" element={<Reports />} />
+          </Route>
+          <Route
+            path="/inventory"
+            element={
+              <ProtectedRoute>
+                <InventoryLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="product-categories" replace />} />
+            <Route path="product-categories" element={<ProductCategories />} />
+            <Route path="products" element={<Products />} />
           </Route>
         </Routes>
       </AuthProvider>

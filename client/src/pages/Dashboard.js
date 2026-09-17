@@ -43,6 +43,9 @@ function Dashboard() {
           <Link to="/finance" style={{ color: "#2563eb" }}>
             Finance →
           </Link>
+          <Link to="/inventory" style={{ color: "#2563eb" }}>
+            Inventory →
+          </Link>
           <button onClick={logout} style={{ padding: "8px 16px" }}>
             Log out{user?.email ? ` (${user.email})` : ""}
           </button>
