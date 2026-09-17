@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import FinanceLayout from "./finance/FinanceLayout";
 import FinanceSettings from "./finance/FinanceSettings";
 import JournalEntries from "./finance/JournalEntries";
+import Reports from "./finance/Reports";
 import "./App.css";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
             <Route index element={<Navigate to="settings" replace />} />
             <Route path="settings" element={<FinanceSettings />} />
             <Route path="journal-entries" element={<JournalEntries />} />
+            <Route path="reports" element={<Reports />} />
           </Route>
         </Routes>
       </AuthProvider>

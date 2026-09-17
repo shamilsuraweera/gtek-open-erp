@@ -39,6 +39,9 @@ function FinanceLayout() {
         <NavLink to="/finance/journal-entries" style={navLinkStyle}>
           Journal Entries
         </NavLink>
+        <NavLink to="/finance/reports" style={navLinkStyle}>
+          Reports
+        </NavLink>
       </nav>
 
       <div style={{ padding: "24px 40px" }}>

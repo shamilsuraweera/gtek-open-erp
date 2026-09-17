@@ -13,11 +13,19 @@ import { TaxesService } from './taxes.service';
 import { TaxesController } from './taxes.controller';
 import { JournalEntriesService } from './journal-entries.service';
 import { JournalEntriesController } from './journal-entries.controller';
+import { ReportsService } from './reports.service';
+import { ReportsController } from './reports.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Account, Journal, Tax, JournalEntry, JournalEntryLine])],
-  controllers: [AccountsController, JournalsController, TaxesController, JournalEntriesController],
-  providers: [AccountsService, JournalsService, TaxesService, JournalEntriesService],
-  exports: [AccountsService, JournalsService, TaxesService, JournalEntriesService],
+  controllers: [
+    AccountsController,
+    JournalsController,
+    TaxesController,
+    JournalEntriesController,
+    ReportsController,
+  ],
+  providers: [AccountsService, JournalsService, TaxesService, JournalEntriesService, ReportsService],
+  exports: [AccountsService, JournalsService, TaxesService, JournalEntriesService, ReportsService],
 })
 export class FinanceModule {}
