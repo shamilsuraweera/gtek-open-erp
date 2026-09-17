@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import apiClient from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
@@ -38,9 +39,14 @@ function Dashboard() {
     <div style={{ fontFamily: "sans-serif", padding: "40px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>G‑TEK ERP — System Connectivity Check</h1>
-        <button onClick={logout} style={{ padding: "8px 16px" }}>
-          Log out{user?.email ? ` (${user.email})` : ""}
-        </button>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <Link to="/finance" style={{ color: "#2563eb" }}>
+            Finance →
+          </Link>
+          <button onClick={logout} style={{ padding: "8px 16px" }}>
+            Log out{user?.email ? ` (${user.email})` : ""}
+          </button>
+        </div>
       </div>
 
       <div style={{ marginTop: "20px" }}>
