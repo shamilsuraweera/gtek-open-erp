@@ -60,6 +60,8 @@ const NAV_LINKS = [
   { to: "/banking", label: "Banking" },
 ];
 
+const ADMIN_LINK = { to: "/admin/users", label: "Security / Users" };
+
 function Dashboard() {
   const { user, logout } = useAuth();
   const { metrics, recentInvoices, recentVendorBills, isLoading, error } = useDashboard();
@@ -72,7 +74,7 @@ function Dashboard() {
           <p style={{ margin: "4px 0 0", color: "#6b7280" }}>Command Center</p>
         </div>
         <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
-          {NAV_LINKS.map((link) => (
+          {[...NAV_LINKS, ...(user?.role === "Admin" ? [ADMIN_LINK] : [])].map((link) => (
             <Link key={link.to} to={link.to} style={navLinkStyle}>
               {link.label} →
             </Link>

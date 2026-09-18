@@ -13,6 +13,7 @@ import Products from "./inventory/Products";
 import Contacts from "./contacts/Contacts";
 import Invoices from "./sales/Invoices";
 import VendorBills from "./purchasing/VendorBills";
+import UserAdmin from "./users/UserAdmin";
 import BankingLayout from "./banking/BankingLayout";
 import BankStatements from "./banking/BankStatements";
 import ReconciliationDashboard from "./banking/ReconciliationDashboard";
@@ -93,6 +94,14 @@ function App() {
             <Route path="statements" element={<BankStatements />} />
             <Route path="reconcile" element={<ReconciliationDashboard />} />
           </Route>
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <UserAdmin />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

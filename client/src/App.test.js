@@ -77,6 +77,27 @@ test("renders the command center dashboard once authenticated", async () => {
   expect(screen.getByText("Acme Corp")).toBeInTheDocument();
   expect(screen.getByText("BILL-2026-1")).toBeInTheDocument();
   expect(screen.getByText("Acme Supplies")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /security \/ users/i })).toBeInTheDocument();
+});
+
+test("hides the Security / Users link from non-admin users", async () => {
+  localStorage.setItem(
+    TOKEN_STORAGE_KEY,
+    makeFakeToken({ sub: 2, email: "bob@gtek.dev", role: "User" }),
+  );
+  apiClient.get.mockImplementation((url) =>
+    Promise.resolve({
+      data:
+        url === "/dashboard/metrics"
+          ? { revenueThisMonth: "0.0000", unpaidAR: "0.0000", unpaidAP: "0.0000" }
+          : { recentInvoices: [], recentVendorBills: [] },
+    }),
+  );
+
+  render(<App />);
+
+  expect(await screen.findByText("Revenue This Month")).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: /security \/ users/i })).not.toBeInTheDocument();
 });
 
 test("shows an error when the dashboard data fails to load", async () => {
