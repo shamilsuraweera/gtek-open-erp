@@ -11,6 +11,7 @@ import InventoryLayout from "./inventory/InventoryLayout";
 import ProductCategories from "./inventory/ProductCategories";
 import Products from "./inventory/Products";
 import Contacts from "./contacts/Contacts";
+import Invoices from "./sales/Invoices";
 import "./App.css";
 
 function App() {
@@ -57,6 +58,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Contacts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales"
+            element={
+              <ProtectedRoute>
+                <Invoices />
               </ProtectedRoute>
             }
           />

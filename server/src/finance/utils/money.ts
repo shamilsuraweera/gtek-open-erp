@@ -21,3 +21,18 @@ export function fromMinorUnits(minorUnits: number): string {
   const fraction = String(abs % 10000).padStart(4, '0');
   return `${negative ? '-' : ''}${whole}.${fraction}`;
 }
+
+/**
+ * Multiplies two exact decimal values expressed as integer minor units
+ * (ten-thousandths), returning the product in the same minor-unit scale.
+ * Multiplying two already-scaled integers (each x10^4) yields a raw
+ * product scaled by x10^8; this rescales back down to x10^4 with standard
+ * rounding rather than truncating or reintroducing float math. Note: for
+ * extreme values (well beyond any realistic invoice quantity x price) the
+ * raw product could exceed Number.MAX_SAFE_INTEGER before rounding; this
+ * is not handled with BigInt since no real ERP line item approaches that
+ * range.
+ */
+export function multiplyMinorUnits(aMinor: number, bMinor: number): number {
+  return Math.round((aMinor * bMinor) / 10000);
+}

@@ -27,3 +27,12 @@ export function fromMinorUnits(minorUnits) {
   const fraction = String(abs % 10000).padStart(4, "0");
   return `${negative ? "-" : ""}${whole}.${fraction}`;
 }
+
+// Multiplies two exact decimal values expressed as integer minor units
+// (ten-thousandths), returning the product in the same minor-unit scale.
+// Mirrors the backend's multiplyMinorUnits (server/src/finance/utils/money.ts)
+// exactly, for the same reason the rest of this file is duplicated rather
+// than shared: client and server are separate packages.
+export function multiplyMinorUnits(aMinor, bMinor) {
+  return Math.round((aMinor * bMinor) / 10000);
+}

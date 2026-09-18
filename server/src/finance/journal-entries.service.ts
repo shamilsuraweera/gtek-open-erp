@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { JournalEntry } from './entities/journal-entry.entity';
 import { JournalEntryLine } from './entities/journal-entry-line.entity';
 import { Journal } from './entities/journal.entity';
@@ -113,67 +113,83 @@ export class JournalEntriesService {
    * Once committed, JournalEntry immutability (enforced at the controller/
    * service boundary for any future edit endpoints) keeps this guarantee
    * from ever being invalidated after the fact.
+   *
+   * Accepts an optional `manager`: when a caller (e.g. InvoicesService)
+   * already holds an open transaction, passing its manager here makes
+   * this posting logic participate in that same transaction instead of
+   * opening a nested one — so the caller's other writes (like flipping an
+   * Invoice to Posted) commit or roll back atomically together with this
+   * entry, while every validation/locking guarantee below is identical
+   * either way. Called with no manager (the normal API/UI path), it opens
+   * its own transaction exactly as before.
    */
-  async postEntry(id: number): Promise<JournalEntry> {
-    return this.journalEntryRepository.manager.transaction(async (manager) => {
-      const entry = await manager.findOne(JournalEntry, {
-        where: { Id: id },
-        relations: { Lines: { Account: true, Tax: true }, Journal: true },
-      });
+  async postEntry(id: number, manager?: EntityManager): Promise<JournalEntry> {
+    if (manager) {
+      return this.runPostEntry(id, manager);
+    }
+    return this.journalEntryRepository.manager.transaction((txManager) =>
+      this.runPostEntry(id, txManager),
+    );
+  }
 
-      if (!entry) {
-        throw new NotFoundException(`Journal entry ${id} not found`);
-      }
-      if (entry.State !== JournalEntryState.Draft) {
-        throw new ConflictException('Only draft entries can be posted');
-      }
-      if (!entry.Lines || entry.Lines.length < 2) {
-        throw new BadRequestException('A journal entry must have at least two lines to post');
-      }
-
-      let totalDebit = 0;
-      let totalCredit = 0;
-      for (const line of entry.Lines) {
-        if (!line.Account.IsActive || (line.Tax && !line.Tax.IsActive)) {
-          throw new BadRequestException('One or more lines reference an inactive account or tax');
-        }
-        totalDebit += toMinorUnits(line.Debit);
-        totalCredit += toMinorUnits(line.Credit);
-      }
-
-      if (totalDebit !== totalCredit) {
-        throw new BadRequestException(
-          `Entry is not balanced: total debit ${fromMinorUnits(totalDebit)} does not equal total credit ${fromMinorUnits(totalCredit)}`,
-        );
-      }
-      if (totalDebit === 0) {
-        throw new BadRequestException('A journal entry cannot be all zero');
-      }
-
-      // Row lock: WITH (UPDLOCK, ROWLOCK) on the Journal row. Any concurrent
-      // postEntry() targeting the same journal blocks here until this
-      // transaction commits or rolls back, so NextSequenceNumber can never
-      // be handed out twice.
-      const journal = await manager.findOne(Journal, {
-        where: { Id: entry.Journal.Id },
-        lock: { mode: 'pessimistic_write' },
-      });
-      if (!journal || !journal.IsActive) {
-        throw new BadRequestException('Journal is not active');
-      }
-
-      const sequenceNumber = journal.NextSequenceNumber;
-      journal.NextSequenceNumber += 1;
-      await manager.save(Journal, journal);
-
-      const prefix = journal.SequencePrefix || `${journal.Code}/`;
-      entry.Reference = `${prefix}${sequenceNumber}`;
-      entry.TotalDebit = fromMinorUnits(totalDebit);
-      entry.TotalCredit = fromMinorUnits(totalCredit);
-      entry.State = JournalEntryState.Posted;
-      entry.PostedAt = new Date();
-
-      return manager.save(JournalEntry, entry);
+  private async runPostEntry(id: number, manager: EntityManager): Promise<JournalEntry> {
+    const entry = await manager.findOne(JournalEntry, {
+      where: { Id: id },
+      relations: { Lines: { Account: true, Tax: true }, Journal: true },
     });
+
+    if (!entry) {
+      throw new NotFoundException(`Journal entry ${id} not found`);
+    }
+    if (entry.State !== JournalEntryState.Draft) {
+      throw new ConflictException('Only draft entries can be posted');
+    }
+    if (!entry.Lines || entry.Lines.length < 2) {
+      throw new BadRequestException('A journal entry must have at least two lines to post');
+    }
+
+    let totalDebit = 0;
+    let totalCredit = 0;
+    for (const line of entry.Lines) {
+      if (!line.Account.IsActive || (line.Tax && !line.Tax.IsActive)) {
+        throw new BadRequestException('One or more lines reference an inactive account or tax');
+      }
+      totalDebit += toMinorUnits(line.Debit);
+      totalCredit += toMinorUnits(line.Credit);
+    }
+
+    if (totalDebit !== totalCredit) {
+      throw new BadRequestException(
+        `Entry is not balanced: total debit ${fromMinorUnits(totalDebit)} does not equal total credit ${fromMinorUnits(totalCredit)}`,
+      );
+    }
+    if (totalDebit === 0) {
+      throw new BadRequestException('A journal entry cannot be all zero');
+    }
+
+    // Row lock: WITH (UPDLOCK, ROWLOCK) on the Journal row. Any concurrent
+    // postEntry() targeting the same journal blocks here until this
+    // transaction commits or rolls back, so NextSequenceNumber can never
+    // be handed out twice.
+    const journal = await manager.findOne(Journal, {
+      where: { Id: entry.Journal.Id },
+      lock: { mode: 'pessimistic_write' },
+    });
+    if (!journal || !journal.IsActive) {
+      throw new BadRequestException('Journal is not active');
+    }
+
+    const sequenceNumber = journal.NextSequenceNumber;
+    journal.NextSequenceNumber += 1;
+    await manager.save(Journal, journal);
+
+    const prefix = journal.SequencePrefix || `${journal.Code}/`;
+    entry.Reference = `${prefix}${sequenceNumber}`;
+    entry.TotalDebit = fromMinorUnits(totalDebit);
+    entry.TotalCredit = fromMinorUnits(totalCredit);
+    entry.State = JournalEntryState.Posted;
+    entry.PostedAt = new Date();
+
+    return manager.save(JournalEntry, entry);
   }
 }

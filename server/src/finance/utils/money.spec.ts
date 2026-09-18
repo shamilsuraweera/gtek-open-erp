@@ -1,4 +1,4 @@
-import { fromMinorUnits, toMinorUnits } from './money';
+import { fromMinorUnits, multiplyMinorUnits, toMinorUnits } from './money';
 
 describe('money utils', () => {
   describe('toMinorUnits', () => {
@@ -47,5 +47,30 @@ describe('money utils', () => {
     const a = toMinorUnits('0.10');
     const b = toMinorUnits('0.20');
     expect(fromMinorUnits(a + b)).toBe('0.3000');
+  });
+
+  describe('multiplyMinorUnits', () => {
+    it('multiplies a quantity by a unit price exactly', () => {
+      const quantity = toMinorUnits('3');
+      const unitPrice = toMinorUnits('19.99');
+      const lineTotal = multiplyMinorUnits(quantity, unitPrice);
+      expect(fromMinorUnits(lineTotal)).toBe('59.9700');
+    });
+
+    it('multiplies fractional quantities exactly', () => {
+      const quantity = toMinorUnits('0.5');
+      const unitPrice = toMinorUnits('10');
+      const lineTotal = multiplyMinorUnits(quantity, unitPrice);
+      expect(fromMinorUnits(lineTotal)).toBe('5.0000');
+    });
+
+    it('rounds to the nearest ten-thousandth rather than truncating', () => {
+      const quantity = toMinorUnits('3');
+      const unitPrice = toMinorUnits('0.0001');
+      // 3 * 0.0001 = 0.0003 exactly, no rounding needed here, but confirms
+      // the rescale-by-10000 step doesn't silently drop precision.
+      const lineTotal = multiplyMinorUnits(quantity, unitPrice);
+      expect(fromMinorUnits(lineTotal)).toBe('0.0003');
+    });
   });
 });

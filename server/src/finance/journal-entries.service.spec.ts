@@ -238,5 +238,20 @@ describe('JournalEntriesService', () => {
       expect(result.TotalDebit).toBe('0.3000');
       expect(result.TotalCredit).toBe('0.3000');
     });
+
+    it('runs directly against a caller-supplied manager instead of opening a new transaction', async () => {
+      const entry = draftEntry();
+      const journal = activeJournal();
+      const externalManager = {
+        findOne: jest.fn((entity: any) => (entity === JournalEntry ? entry : journal)),
+        save: jest.fn(async (_entity: any, value: any) => value),
+      };
+
+      const result = await service.postEntry(1, externalManager as any);
+
+      expect(result.State).toBe(JournalEntryState.Posted);
+      expect(journalEntryRepository.manager.transaction).not.toHaveBeenCalled();
+      expect(externalManager.findOne).toHaveBeenCalled();
+    });
   });
 });
