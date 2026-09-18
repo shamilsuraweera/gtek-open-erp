@@ -7,6 +7,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { Contact } from '../contacts/contact.entity';
 import { InvoiceLine } from './invoice-line.entity';
@@ -14,6 +15,10 @@ import { decimalTransformer } from '../common/transformers/decimal.transformer';
 import { InvoiceStatus } from './sales.enums';
 
 @Entity('Invoices')
+@Index('UQ_Invoices_InvoiceNumber', ['InvoiceNumber'], {
+  unique: true,
+  where: `"InvoiceNumber" <> ''`,
+})
 export class Invoice {
   @PrimaryGeneratedColumn()
   Id: number;

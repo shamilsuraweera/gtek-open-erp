@@ -7,6 +7,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { Contact } from '../contacts/contact.entity';
 import { VendorBillLine } from './vendor-bill-line.entity';
@@ -14,6 +15,10 @@ import { decimalTransformer } from '../common/transformers/decimal.transformer';
 import { VendorBillStatus } from './purchasing.enums';
 
 @Entity('VendorBills')
+@Index('UQ_VendorBills_BillNumber', ['BillNumber'], {
+  unique: true,
+  where: `"BillNumber" <> ''`,
+})
 export class VendorBill {
   @PrimaryGeneratedColumn()
   Id: number;

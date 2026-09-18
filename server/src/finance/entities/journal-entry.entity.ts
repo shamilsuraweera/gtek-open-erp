@@ -7,6 +7,8 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Check,
+  Index,
 } from 'typeorm';
 import { Journal } from './journal.entity';
 import { JournalEntryLine } from './journal-entry-line.entity';
@@ -14,6 +16,11 @@ import { decimalTransformer } from '../../common/transformers/decimal.transforme
 import { JournalEntryState } from '../finance.enums';
 
 @Entity('JournalEntries')
+@Check('CHK_JournalEntries_PostedTotalsBalance', `"State" <> 'Posted' OR "TotalDebit" = "TotalCredit"`)
+@Index('UQ_JournalEntries_Journal_Reference', ['Journal', 'Reference'], {
+  unique: true,
+  where: `"Reference" <> ''`,
+})
 export class JournalEntry {
   @PrimaryGeneratedColumn()
   Id: number;

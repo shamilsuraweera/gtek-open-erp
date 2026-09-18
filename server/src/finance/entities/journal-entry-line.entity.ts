@@ -1,10 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Check } from 'typeorm';
 import { JournalEntry } from './journal-entry.entity';
 import { Account } from './account.entity';
 import { Tax } from './tax.entity';
 import { decimalTransformer } from '../../common/transformers/decimal.transformer';
 
 @Entity('JournalEntryLines')
+@Check('CHK_JournalEntryLines_NonNegative', `"Debit" >= 0 AND "Credit" >= 0`)
+@Check('CHK_JournalEntryLines_OneSided', `"Debit" = 0 OR "Credit" = 0`)
 export class JournalEntryLine {
   @PrimaryGeneratedColumn()
   Id: number;
