@@ -94,3 +94,6 @@ The NestJS backend enforces strict CORS policies allowing communication exclusiv
 - **Shamil Suraweera** — Developer (Frontend/Backend Integration, CORS Resolution, Project Architecture)
 - **Backend Support** — NestJS Module Configuration & Database Entities
 - **Frontend Support** — React UI Components & Dashboard Layouts
+
+- testadmin@example.com
+- SecurePassword123!

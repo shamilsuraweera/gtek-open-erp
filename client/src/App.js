@@ -12,6 +12,7 @@ import ProductCategories from "./inventory/ProductCategories";
 import Products from "./inventory/Products";
 import Contacts from "./contacts/Contacts";
 import Invoices from "./sales/Invoices";
+import VendorBills from "./purchasing/VendorBills";
 import "./App.css";
 
 function App() {
@@ -66,6 +67,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Invoices />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/purchasing"
+            element={
+              <ProtectedRoute>
+                <VendorBills />
               </ProtectedRoute>
             }
           />
