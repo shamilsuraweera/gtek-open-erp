@@ -55,6 +55,9 @@ function Dashboard() {
           <Link to="/purchasing" style={{ color: "#2563eb" }}>
             Purchasing →
           </Link>
+          <Link to="/banking" style={{ color: "#2563eb" }}>
+            Banking →
+          </Link>
           <button onClick={logout} style={{ padding: "8px 16px" }}>
             Log out{user?.email ? ` (${user.email})` : ""}
           </button>

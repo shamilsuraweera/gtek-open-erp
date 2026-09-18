@@ -13,6 +13,9 @@ import Products from "./inventory/Products";
 import Contacts from "./contacts/Contacts";
 import Invoices from "./sales/Invoices";
 import VendorBills from "./purchasing/VendorBills";
+import BankingLayout from "./banking/BankingLayout";
+import BankStatements from "./banking/BankStatements";
+import ReconciliationDashboard from "./banking/ReconciliationDashboard";
 import "./App.css";
 
 function App() {
@@ -78,6 +81,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/banking"
+            element={
+              <ProtectedRoute>
+                <BankingLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="statements" replace />} />
+            <Route path="statements" element={<BankStatements />} />
+            <Route path="reconcile" element={<ReconciliationDashboard />} />
+          </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
