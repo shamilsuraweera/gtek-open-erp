@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import App from "./App";
 import apiClient, { TOKEN_STORAGE_KEY } from "./api/client";
 
@@ -28,30 +28,79 @@ test("redirects unauthenticated users to the login page", async () => {
   expect(apiClient.get).not.toHaveBeenCalled();
 });
 
-test("renders the connectivity dashboard once authenticated", async () => {
+test("renders the command center dashboard once authenticated", async () => {
   localStorage.setItem(
     TOKEN_STORAGE_KEY,
     makeFakeToken({ sub: 1, email: "admin@gtek.dev", role: "Admin" }),
   );
   apiClient.get.mockImplementation((url) => {
-    if (url === "/") return Promise.resolve({ data: "Backend is running" });
-    if (url === "/db-test") return Promise.resolve({ data: [{ test: 1 }] });
+    if (url === "/dashboard/metrics") {
+      return Promise.resolve({
+        data: { revenueThisMonth: "15200.5000", unpaidAR: "3200.0000", unpaidAP: "980.2500" },
+      });
+    }
+    if (url === "/dashboard/recent-activity") {
+      return Promise.resolve({
+        data: {
+          recentInvoices: [
+            {
+              Id: 1,
+              InvoiceNumber: "INV-2026-1",
+              Contact: { Name: "Acme Corp" },
+              TotalAmount: "500.0000",
+              Status: "Posted",
+            },
+          ],
+          recentVendorBills: [
+            {
+              Id: 1,
+              BillNumber: "BILL-2026-1",
+              Contact: { Name: "Acme Supplies" },
+              TotalAmount: "300.0000",
+              Status: "Draft",
+            },
+          ],
+        },
+      });
+    }
     return Promise.reject(new Error(`unexpected url: ${url}`));
   });
 
   render(<App />);
 
-  expect(
-    await screen.findByRole("heading", { name: /system connectivity check/i }),
-  ).toBeInTheDocument();
+  expect(await screen.findByText("Revenue This Month")).toBeInTheDocument();
+  expect(screen.getByText("$15,200.50")).toBeInTheDocument();
+  expect(screen.getByText("$3,200.00")).toBeInTheDocument();
+  expect(screen.getByText("$980.25")).toBeInTheDocument();
 
-  await waitFor(() => {
-    expect(screen.getAllByText("Connected")).toHaveLength(2);
-  });
-  expect(screen.getByText(/\[{"test":1}\]/)).toBeInTheDocument();
+  expect(screen.getByText("INV-2026-1")).toBeInTheDocument();
+  expect(screen.getByText("Acme Corp")).toBeInTheDocument();
+  expect(screen.getByText("BILL-2026-1")).toBeInTheDocument();
+  expect(screen.getByText("Acme Supplies")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /security \/ users/i })).toBeInTheDocument();
 });
 
-test("shows a failed status when the health checks reject", async () => {
+test("hides the Security / Users link from non-admin users", async () => {
+  localStorage.setItem(
+    TOKEN_STORAGE_KEY,
+    makeFakeToken({ sub: 2, email: "bob@gtek.dev", role: "User" }),
+  );
+  apiClient.get.mockImplementation((url) =>
+    Promise.resolve({
+      data:
+        url === "/dashboard/metrics"
+          ? { revenueThisMonth: "0.0000", unpaidAR: "0.0000", unpaidAP: "0.0000" }
+          : { recentInvoices: [], recentVendorBills: [] },
+    }),
+  );
+
+  render(<App />);
+
+  expect(await screen.findByText("Revenue This Month")).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: /security \/ users/i })).not.toBeInTheDocument();
+});
+
+test("shows an error when the dashboard data fails to load", async () => {
   localStorage.setItem(
     TOKEN_STORAGE_KEY,
     makeFakeToken({ sub: 1, email: "admin@gtek.dev", role: "Admin" }),
@@ -60,7 +109,5 @@ test("shows a failed status when the health checks reject", async () => {
 
   render(<App />);
 
-  await waitFor(() => {
-    expect(screen.getAllByText("Failed")).toHaveLength(2);
-  });
+  expect(await screen.findByText("network error")).toBeInTheDocument();
 });
