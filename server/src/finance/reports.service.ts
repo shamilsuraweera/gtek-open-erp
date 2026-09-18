@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Account } from './entities/account.entity';
 import { JournalEntryLine } from './entities/journal-entry-line.entity';
 import { AccountType, JournalEntryState } from './finance.enums';
-import { fromMinorUnits, toMinorUnits } from './utils/money';
+import { formatAggregate, fromMinorUnits, toMinorUnits } from './utils/money';
 import { TrialBalanceRow } from './dto/trial-balance-row.dto';
 import { GeneralLedgerRow } from './dto/general-ledger-row.dto';
 
@@ -15,20 +15,6 @@ interface RawTrialBalanceRow {
   accountType: AccountType;
   totalDebit: number | string | null;
   totalCredit: number | string | null;
-}
-
-/**
- * mssql/tedious hands back SQL Server's DECIMAL SUM as a JS number. The SUM
- * itself is computed exactly by T-SQL's decimal engine (no float involved
- * server-side) — the only float boundary is this single wire conversion.
- * Reformatting to a canonical 4-decimal string here does not (and cannot)
- * recover precision already lost crossing that boundary; for realistic
- * ERP magnitudes (far below the ~15-17 significant digits a JS double can
- * hold exactly) this is a non-issue in practice. Same accepted tradeoff as
- * decimalTransformer / TaxesService.create.
- */
-function formatAggregate(value: number | string | null): string {
-  return Number(value ?? 0).toFixed(4);
 }
 
 @Injectable()

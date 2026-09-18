@@ -11,6 +11,7 @@ import { ContactsModule } from './contacts/contacts.module';
 import { SalesModule } from './sales/sales.module';
 import { PurchasingModule } from './purchasing/purchasing.module';
 import { BankingModule } from './banking/banking.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { BankingModule } from './banking/banking.module';
     SalesModule,
     PurchasingModule,
     BankingModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

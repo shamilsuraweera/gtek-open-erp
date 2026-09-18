@@ -36,3 +36,17 @@ export function fromMinorUnits(minorUnits: number): string {
 export function multiplyMinorUnits(aMinor: number, bMinor: number): number {
   return Math.round((aMinor * bMinor) / 10000);
 }
+
+/**
+ * mssql/tedious hands back SQL Server's DECIMAL SUM as a JS number. The SUM
+ * itself is computed exactly by T-SQL's decimal engine (no float involved
+ * server-side) — the only float boundary is this single wire conversion.
+ * Reformatting to a canonical 4-decimal string here does not (and cannot)
+ * recover precision already lost crossing that boundary; for realistic
+ * ERP magnitudes (far below the ~15-17 significant digits a JS double can
+ * hold exactly) this is a non-issue in practice. A NULL aggregate (no
+ * matching rows) is treated as zero rather than surfaced as null/NaN.
+ */
+export function formatAggregate(value: number | string | null | undefined): string {
+  return Number(value ?? 0).toFixed(4);
+}

@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./dashboard/Dashboard";
 import FinanceLayout from "./finance/FinanceLayout";
 import FinanceSettings from "./finance/FinanceSettings";
 import JournalEntries from "./finance/JournalEntries";
