@@ -10,6 +10,7 @@ import Reports from "./finance/Reports";
 import InventoryLayout from "./inventory/InventoryLayout";
 import ProductCategories from "./inventory/ProductCategories";
 import Products from "./inventory/Products";
+import Contacts from "./contacts/Contacts";
 import "./App.css";
 
 function App() {
@@ -51,6 +52,14 @@ function App() {
             <Route path="product-categories" element={<ProductCategories />} />
             <Route path="products" element={<Products />} />
           </Route>
+          <Route
+            path="/contacts"
+            element={
+              <ProtectedRoute>
+                <Contacts />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
