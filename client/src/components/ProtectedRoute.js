@@ -1,8 +1,9 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-function ProtectedRoute({ children }) {
-  const { isAuthenticated, isInitializing } = useAuth();
+// requiredRole is UI-level gating only; the API enforces the same rule.
+function ProtectedRoute({ children, requiredRole }) {
+  const { isAuthenticated, isInitializing, user } = useAuth();
 
   if (isInitializing) {
     return null;
@@ -10,6 +11,10 @@ function ProtectedRoute({ children }) {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requiredRole && user?.role !== requiredRole) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

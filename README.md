@@ -83,9 +83,9 @@ The NestJS backend enforces strict CORS policies allowing communication exclusiv
 
 - [x] **Phase 1 (Foundation):** Repository structure, React frontend setup, and NestJS server initialization.
 - [x] **Phase 2 (Connectivity):** CORS configuration, port alignment, and database health check integration (`/db-test`).
-- [ ] **Phase 3 (Authentication):** JWT-based login, role-based access control (RBAC), and user CRUD endpoints.
-- [ ] **Phase 4 (Dashboard & UI):** React dashboard layout with Tailwind CSS / Material UI integration.
-- [ ] **Phase 5 (Core ERP Modules):** Inventory, order management, and centralized API service layer.
+- [x] **Phase 3 (Authentication):** JWT-based login, role-based access control (RBAC), and user CRUD endpoints.
+- [x] **Phase 4 (Dashboard & UI):** React dashboard layout with Tailwind CSS / Material UI integration.
+- [x] **Phase 5 (Core ERP Modules):** Inventory, order management, and centralized API service layer.
 
 ---
 
@@ -94,3 +94,6 @@ The NestJS backend enforces strict CORS policies allowing communication exclusiv
 - **Shamil Suraweera** — Developer (Frontend/Backend Integration, CORS Resolution, Project Architecture)
 - **Backend Support** — NestJS Module Configuration & Database Entities
 - **Frontend Support** — React UI Components & Dashboard Layouts
+
+- testadmin@example.com
+- SecurePassword123!

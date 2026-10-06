@@ -48,6 +48,7 @@ describe('AuthService', () => {
         Role: 'User',
         IsActive: true,
         CreatedAt: new Date(),
+        UpdatedAt: null,
       });
 
       const result = await service.validateUser('a@b.com', 'correct-password');
@@ -67,6 +68,7 @@ describe('AuthService', () => {
         Role: 'User',
         IsActive: true,
         CreatedAt: new Date(),
+        UpdatedAt: null,
       });
 
       const result = await service.validateUser('a@b.com', 'wrong-password');
@@ -107,6 +109,7 @@ describe('AuthService', () => {
         Role: 'User',
         IsActive: true,
         CreatedAt: new Date(),
+        UpdatedAt: null,
       });
 
       await expect(service.register('a@b.com', 'password')).rejects.toThrow(
@@ -124,6 +127,7 @@ describe('AuthService', () => {
         Role: 'User',
         IsActive: true,
         CreatedAt: new Date(),
+        UpdatedAt: null,
       });
 
       const result = await service.register('a@b.com', 'password');

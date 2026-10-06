@@ -59,3 +59,5 @@ Thumbs.db
 # 9. Examples
 example.server.gitignore
 example.client.gitignore
+# 10. Docker (local dev SQL Server setup)
+docker/
