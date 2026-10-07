@@ -1,13 +1,568 @@
+/* ------------------------------------------------------------------ */
+/* G-TEK ERP design system: tokens, base elements, shared components.   */
+/* Shell layout (sidebar / ribbon) lives in layout/shell.css.           */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-2: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eff6ff;
+  --primary-ring: rgba(37, 99, 235, 0.25);
+
+  --success: #15803d;
+  --success-soft: #dcfce7;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
+
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --sidebar-text: #cbd5e1;
+  --sidebar-muted: #64748b;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--mono);
+}
+
+a {
+  color: var(--primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---------------------------- typography ---------------------------- */
+
+.main h1,
+.auth h1 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.main h2 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.main h3 {
+  margin: 24px 0 10px;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-2);
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.page-head h1,
+.page-head h2 {
+  margin: 0;
+}
+
+.page-sub {
+  margin: -8px 0 16px;
+  color: var(--muted);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 12px;
+}
+
+.strong {
+  font-weight: 700;
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-faint {
+  color: var(--faint);
+}
+
+/* ------------------------------ forms ------------------------------- */
+
+.main label,
+.auth label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.main input:not([type="checkbox"]):not([type="radio"]),
+.main select,
+.main textarea,
+.auth input:not([type="checkbox"]) {
+  width: 100%;
+  min-width: 150px;
+  height: 36px;
+  padding: 0 10px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.main input:focus,
+.main select:focus,
+.auth input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-ring);
+}
+
+.main input:disabled,
+.main select:disabled {
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+.main input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.form-row,
+.card-form {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.form-row > div {
+  min-width: 0;
+}
+
+.card-form .form-row {
+  padding: 0;
+  margin-bottom: 16px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.form-row .grow,
+.grow {
+  flex: 1;
+  min-width: 220px;
+}
+
+.field {
+  max-width: 360px;
+  margin-bottom: 16px;
+}
+
+.check-field,
+.main label.check-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.inline-actions input,
+.inline-actions select {
+  min-width: 140px;
+}
+
+.split {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.center {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* ----------------------------- buttons ------------------------------ */
+
+.main button,
+.auth button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.main button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--faint);
+}
+
+.main button[type="submit"],
+.main .btn-primary,
+.auth button[type="submit"] {
+  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.main button[type="submit"]:hover:not(:disabled),
+.main .btn-primary:hover:not(:disabled),
+.auth button[type="submit"]:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.main button:disabled,
+.auth button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.main .btn-sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.main .btn-outline {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.main .btn-outline:hover:not(:disabled) {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+}
+
+.main .btn-danger {
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+.main .btn-danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+}
+
+.main .center button {
+  height: 42px;
+  padding: 0 28px;
+  font-size: 15px;
+}
+
+/* ------------------------------ tables ------------------------------ */
+
+.table {
+  width: 100%;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.table th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--row-line);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table tbody tr:hover td {
+  background: var(--row-hover);
+}
+
+.table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.table .cell-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.table td input,
+.table td select {
+  min-width: 90px;
+}
+
+.table .total-row {
+  border-top: 2px solid var(--text);
+}
+
+.table tfoot td {
+  background: var(--surface-2);
+}
+
+.table .balance-note {
+  padding: 12px 14px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.row-selectable {
+  cursor: pointer;
+}
+
+.table tbody tr.row-selected td {
+  background: var(--row-selected);
+}
+
+/* ------------------------- badges & messages ------------------------ */
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  border-radius: 999px;
+}
+
+.badge-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.badge-danger {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.badge-neutral {
+  color: var(--text-2);
+  background: var(--badge-neutral-bg);
+}
+
+.badge-warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.msg {
+  margin: 8px 0;
+}
+
+.msg-error {
+  padding: 10px 12px;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
+}
+
+.msg-success {
+  padding: 10px 12px;
+  color: var(--success);
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-sm);
+}
+
+.msg-muted {
+  color: var(--muted);
+}
+
+/* ------------------------- sub-tabs (in page) ----------------------- */
+
+.subtabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 16px;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  background: var(--segment-bg);
+  border-radius: var(--radius);
+}
+
+.main .subtab {
+  height: 30px;
+  padding: 0 14px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+
+.main .subtab:hover:not(:disabled) {
+  color: var(--text);
+  background: transparent;
+}
+
+.main .subtab.active {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ------------------------------ cards ------------------------------- */
+
+.card {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.card-sub {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+/* ------------------------------ avatar ------------------------------ */
+
+.avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  border-radius: 50%;
+}
+
+@media (max-width: 760px) {
+  .split {
+    flex-direction: column;
+  }
+
+  .split > * {
+    width: 100%;
+  }
 }

@@ -49,6 +49,7 @@ describe('AuthService', () => {
         IsActive: true,
         CreatedAt: new Date(),
         UpdatedAt: null,
+      DisplayName: null,
       });
 
       const result = await service.validateUser('a@b.com', 'correct-password');
@@ -69,6 +70,7 @@ describe('AuthService', () => {
         IsActive: true,
         CreatedAt: new Date(),
         UpdatedAt: null,
+      DisplayName: null,
       });
 
       const result = await service.validateUser('a@b.com', 'wrong-password');
@@ -110,6 +112,7 @@ describe('AuthService', () => {
         IsActive: true,
         CreatedAt: new Date(),
         UpdatedAt: null,
+      DisplayName: null,
       });
 
       await expect(service.register('a@b.com', 'password')).rejects.toThrow(
@@ -128,6 +131,7 @@ describe('AuthService', () => {
         IsActive: true,
         CreatedAt: new Date(),
         UpdatedAt: null,
+      DisplayName: null,
       });
 
       const result = await service.register('a@b.com', 'password');

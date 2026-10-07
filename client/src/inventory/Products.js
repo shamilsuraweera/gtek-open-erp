@@ -3,8 +3,6 @@ import { useReferenceData } from "../finance/useReferenceData";
 import ReferenceDataTable from "../finance/components/ReferenceDataTable";
 
 const PRODUCT_TYPES = ["Storable", "Consumable", "Service"];
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
 
 const EMPTY_FORM = {
   SKU: "",
@@ -70,11 +68,9 @@ function Products() {
 
   return (
     <div>
-      <h2>Products</h2>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <form onSubmit={handleSubmit} className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="product-sku">
+          <label htmlFor="product-sku">
             SKU
           </label>
           <input
@@ -83,11 +79,10 @@ function Products() {
             onChange={handleChange("SKU")}
             required
             maxLength={50}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="product-name">
+          <label htmlFor="product-name">
             Name
           </label>
           <input
@@ -96,11 +91,10 @@ function Products() {
             onChange={handleChange("Name")}
             required
             maxLength={200}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="product-category">
+          <label htmlFor="product-category">
             Category
           </label>
           <select
@@ -108,7 +102,6 @@ function Products() {
             value={form.CategoryId}
             onChange={handleChange("CategoryId")}
             required
-            style={inputStyle}
           >
             <option value="">Select...</option>
             {activeCategories.map((category) => (
@@ -119,10 +112,10 @@ function Products() {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="product-type">
+          <label htmlFor="product-type">
             Type
           </label>
-          <select id="product-type" value={form.Type} onChange={handleChange("Type")} style={inputStyle}>
+          <select id="product-type" value={form.Type} onChange={handleChange("Type")}>
             {PRODUCT_TYPES.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -131,7 +124,7 @@ function Products() {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="product-sale-price">
+          <label htmlFor="product-sale-price">
             Sale Price
           </label>
           <input
@@ -140,11 +133,10 @@ function Products() {
             onChange={handleChange("SalePrice")}
             inputMode="decimal"
             placeholder="0.00"
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="product-cost-price">
+          <label htmlFor="product-cost-price">
             Cost Price
           </label>
           <input
@@ -153,16 +145,15 @@ function Products() {
             onChange={handleChange("CostPrice")}
             inputMode="decimal"
             placeholder="0.00"
-            style={inputStyle}
           />
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Product"}
         </button>
       </form>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading products...</p>
       ) : (

@@ -2,17 +2,6 @@ import { useEffect, useState } from "react";
 import { useReferenceData } from "../finance/useReferenceData";
 import apiClient from "../api/client";
 
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
-const thStyle = {
-  textAlign: "left",
-  padding: "8px 12px",
-  borderBottom: "2px solid #e5e7eb",
-  fontSize: "13px",
-  color: "#6b7280",
-  textTransform: "uppercase",
-};
-const tdStyle = { padding: "8px 12px", borderBottom: "1px solid #f3f4f6" };
 
 function ReconciliationDashboard() {
   const accountsData = useReferenceData("/finance/accounts");
@@ -96,24 +85,18 @@ function ReconciliationDashboard() {
 
   const canMatch = selectedBankLineId !== null && selectedLedgerLineId !== null;
 
-  const rowStyle = (isSelected) => ({
-    cursor: "pointer",
-    background: isSelected ? "#dbeafe" : "transparent",
-  });
-
   return (
     <div>
       <h2>Bank Reconciliation</h2>
 
-      <div style={{ marginBottom: "20px" }}>
-        <label style={labelStyle} htmlFor="reconcile-account">
+      <div className="field">
+        <label htmlFor="reconcile-account">
           Account
         </label>
         <select
           id="reconcile-account"
           value={accountId}
           onChange={(event) => setAccountId(event.target.value)}
-          style={inputStyle}
         >
           <option value="">Select an account...</option>
           {activeAccounts.map((account) => (
@@ -124,27 +107,27 @@ function ReconciliationDashboard() {
         </select>
       </div>
 
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
-      {matchError && <p style={{ color: "#dc2626" }}>{matchError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+      {matchError && <p className="msg msg-error">{matchError}</p>}
 
       {!accountId ? (
-        <p style={{ color: "#6b7280" }}>Select an account to begin reconciling.</p>
+        <p className="msg msg-muted">Select an account to begin reconciling.</p>
       ) : isLoading ? (
         <p>Loading unreconciled lines...</p>
       ) : (
         <>
-          <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
-            <div style={{ flex: 1 }}>
+          <div className="split">
+            <div className="grow">
               <h3>Unreconciled Bank Lines</h3>
               {bankLines.length === 0 ? (
-                <p style={{ color: "#6b7280" }}>No unreconciled bank lines.</p>
+                <p className="msg msg-muted">No unreconciled bank lines.</p>
               ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <table className="table">
                   <thead>
                     <tr>
-                      <th style={thStyle}>Date</th>
-                      <th style={thStyle}>Description</th>
-                      <th style={thStyle}>Amount</th>
+                      <th>Date</th>
+                      <th>Description</th>
+                      <th>Amount</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -152,11 +135,11 @@ function ReconciliationDashboard() {
                       <tr
                         key={line.Id}
                         onClick={() => setSelectedBankLineId(line.Id)}
-                        style={rowStyle(selectedBankLineId === line.Id)}
+                        className={selectedBankLineId === line.Id ? "row-selected" : "row-selectable"}
                       >
-                        <td style={tdStyle}>{line.Date}</td>
-                        <td style={tdStyle}>{line.Description}</td>
-                        <td style={tdStyle}>{line.Amount}</td>
+                        <td>{line.Date}</td>
+                        <td>{line.Description}</td>
+                        <td>{line.Amount}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -164,18 +147,18 @@ function ReconciliationDashboard() {
               )}
             </div>
 
-            <div style={{ flex: 1 }}>
+            <div className="grow">
               <h3>Unreconciled Ledger Lines</h3>
               {ledgerLines.length === 0 ? (
-                <p style={{ color: "#6b7280" }}>No unreconciled ledger lines.</p>
+                <p className="msg msg-muted">No unreconciled ledger lines.</p>
               ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <table className="table">
                   <thead>
                     <tr>
-                      <th style={thStyle}>Date</th>
-                      <th style={thStyle}>Reference</th>
-                      <th style={thStyle}>Debit</th>
-                      <th style={thStyle}>Credit</th>
+                      <th>Date</th>
+                      <th>Reference</th>
+                      <th>Debit</th>
+                      <th>Credit</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -183,12 +166,12 @@ function ReconciliationDashboard() {
                       <tr
                         key={line.Id}
                         onClick={() => setSelectedLedgerLineId(line.Id)}
-                        style={rowStyle(selectedLedgerLineId === line.Id)}
+                        className={selectedLedgerLineId === line.Id ? "row-selected" : "row-selectable"}
                       >
-                        <td style={tdStyle}>{line.JournalEntry ? line.JournalEntry.EntryDate : "—"}</td>
-                        <td style={tdStyle}>{line.JournalEntry ? line.JournalEntry.Reference : "—"}</td>
-                        <td style={tdStyle}>{line.Debit}</td>
-                        <td style={tdStyle}>{line.Credit}</td>
+                        <td>{line.JournalEntry ? line.JournalEntry.EntryDate : "—"}</td>
+                        <td>{line.JournalEntry ? line.JournalEntry.Reference : "—"}</td>
+                        <td>{line.Debit}</td>
+                        <td>{line.Credit}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -198,12 +181,11 @@ function ReconciliationDashboard() {
           </div>
 
           {canMatch && (
-            <div style={{ marginTop: "24px", textAlign: "center" }}>
+            <div className="center">
               <button
                 type="button"
                 onClick={handleMatch}
                 disabled={isMatching}
-                style={{ padding: "12px 32px", fontSize: "15px" }}
               >
                 {isMatching ? "Matching..." : "Match"}
               </button>

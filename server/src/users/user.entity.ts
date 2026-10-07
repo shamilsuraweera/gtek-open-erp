@@ -12,6 +12,9 @@ export class User {
   @Column({ type: 'varchar', length: 255 })
   PasswordHash: string;
 
+  @Column({ type: 'nvarchar', length: 100, nullable: true })
+  DisplayName: string | null;
+
   @Column({ type: 'varchar', length: 50, default: 'User' })
   Role: string;
 

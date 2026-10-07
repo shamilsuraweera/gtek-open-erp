@@ -2,17 +2,6 @@ import { useMemo } from "react";
 import { useReport } from "../useReport";
 import { fromMinorUnits, toMinorUnits } from "../utils/money";
 
-const thStyle = {
-  textAlign: "left",
-  padding: "8px 12px",
-  borderBottom: "2px solid #e5e7eb",
-  fontSize: "13px",
-  color: "#6b7280",
-  textTransform: "uppercase",
-};
-const tdStyle = { padding: "8px 12px", borderBottom: "1px solid #f3f4f6" };
-const numericTh = { ...thStyle, textAlign: "right" };
-const numericTd = { ...tdStyle, textAlign: "right" };
 
 function TrialBalance() {
   const { data: rows, isLoading, error } = useReport("/finance/reports/trial-balance");
@@ -38,33 +27,31 @@ function TrialBalance() {
 
   return (
     <div>
-      <h2>Trial Balance</h2>
-
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
 
       {isLoading ? (
         <p>Loading trial balance...</p>
       ) : !rows || rows.length === 0 ? (
-        <p style={{ color: "#6b7280" }}>No posted activity yet.</p>
+        <p className="msg msg-muted">No posted activity yet.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "12px" }}>
+        <table className="table">
           <thead>
             <tr>
-              <th style={thStyle}>Code</th>
-              <th style={thStyle}>Name</th>
-              <th style={thStyle}>Type</th>
-              <th style={numericTh}>Total Debit</th>
-              <th style={numericTh}>Total Credit</th>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th className="num">Total Debit</th>
+              <th className="num">Total Credit</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.accountId}>
-                <td style={tdStyle}>{row.accountCode}</td>
-                <td style={tdStyle}>{row.accountName}</td>
-                <td style={tdStyle}>{row.accountType}</td>
-                <td style={numericTd}>{row.totalDebit}</td>
-                <td style={numericTd}>{row.totalCredit}</td>
+                <td>{row.accountCode}</td>
+                <td>{row.accountName}</td>
+                <td>{row.accountType}</td>
+                <td className="num">{row.totalDebit}</td>
+                <td className="num">{row.totalCredit}</td>
               </tr>
             ))}
           </tbody>
@@ -72,19 +59,19 @@ function TrialBalance() {
             <tr>
               <td
                 colSpan={3}
-                style={{ ...tdStyle, fontWeight: "bold", borderTop: "2px solid #111827" }}
+                className="strong total-row"
               >
                 Grand Total
               </td>
               <td
                 data-testid="grand-total-debit"
-                style={{ ...numericTd, fontWeight: "bold", borderTop: "2px solid #111827" }}
+                className="num strong total-row"
               >
                 {totalDebit}
               </td>
               <td
                 data-testid="grand-total-credit"
-                style={{ ...numericTd, fontWeight: "bold", borderTop: "2px solid #111827" }}
+                className="num strong total-row"
               >
                 {totalCredit}
               </td>
@@ -92,12 +79,7 @@ function TrialBalance() {
             <tr>
               <td
                 colSpan={5}
-                style={{
-                  padding: "10px 12px",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  color: isBalanced ? "#16a34a" : "#dc2626",
-                }}
+                className={isBalanced ? "balance-note text-success" : "balance-note text-danger"}
               >
                 {isBalanced ? "✓ Ledger is balanced" : "⚠ Ledger is NOT balanced"}
               </td>

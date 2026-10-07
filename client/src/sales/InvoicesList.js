@@ -1,27 +1,9 @@
 import { useState } from "react";
+import { statusBadgeClass } from "../layout/status";
 
-const thStyle = {
-  textAlign: "left",
-  padding: "8px 12px",
-  borderBottom: "2px solid #e5e7eb",
-  fontSize: "13px",
-  color: "#6b7280",
-  textTransform: "uppercase",
-};
 
-const tdStyle = {
-  padding: "8px 12px",
-  borderBottom: "1px solid #f3f4f6",
-};
 
-const stateBadgeStyle = (status) => ({
-  padding: "4px 10px",
-  borderRadius: "999px",
-  fontSize: "12px",
-  fontWeight: "bold",
-  color: "white",
-  background: status === "Posted" ? "#16a34a" : status === "Cancelled" ? "#dc2626" : "#6b7280",
-});
+
 
 function InvoicesList({ invoices, isLoading, error, onPost }) {
   const [postingId, setPostingId] = useState(null);
@@ -45,50 +27,42 @@ function InvoicesList({ invoices, isLoading, error, onPost }) {
 
   return (
     <div>
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
-      {postError && <p style={{ color: "#dc2626" }}>{postError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+      {postError && <p className="msg msg-error">{postError}</p>}
 
       {invoices.length === 0 ? (
-        <p style={{ color: "#6b7280" }}>No invoices yet.</p>
+        <p className="msg msg-muted">No invoices yet.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "12px" }}>
+        <table className="table">
           <thead>
             <tr>
-              <th style={thStyle}>Invoice Number</th>
-              <th style={thStyle}>Date</th>
-              <th style={thStyle}>Customer</th>
-              <th style={thStyle}>Total Amount</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle} />
+              <th>Invoice Number</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th />
             </tr>
           </thead>
           <tbody>
             {invoices.map((invoice) => (
               <tr key={invoice.Id}>
-                <td style={tdStyle}>
-                  {invoice.InvoiceNumber ? invoice.InvoiceNumber : <span style={{ color: "#9ca3af" }}>(unposted)</span>}
+                <td>
+                  {invoice.InvoiceNumber ? invoice.InvoiceNumber : <span className="text-faint">(unposted)</span>}
                 </td>
-                <td style={tdStyle}>{invoice.Date}</td>
-                <td style={tdStyle}>{invoice.Contact ? invoice.Contact.Name : "—"}</td>
-                <td style={tdStyle}>{invoice.TotalAmount}</td>
-                <td style={tdStyle}>
-                  <span style={stateBadgeStyle(invoice.Status)}>{invoice.Status}</span>
+                <td>{invoice.Date}</td>
+                <td>{invoice.Contact ? invoice.Contact.Name : "—"}</td>
+                <td>{invoice.TotalAmount}</td>
+                <td>
+                  <span className={statusBadgeClass(invoice.Status)}>{invoice.Status}</span>
                 </td>
-                <td style={{ ...tdStyle, textAlign: "right" }}>
+                <td className="cell-actions">
                   {invoice.Status === "Draft" && (
                     <button
                       type="button"
                       onClick={() => handlePost(invoice.Id)}
                       disabled={postingId === invoice.Id}
-                      style={{
-                        padding: "4px 10px",
-                        fontSize: "13px",
-                        color: "#2563eb",
-                        border: "1px solid #2563eb",
-                        borderRadius: "4px",
-                        background: "white",
-                        cursor: "pointer",
-                      }}
+                      className="btn-sm btn-outline"
                     >
                       {postingId === invoice.Id ? "Posting..." : "Post"}
                     </button>

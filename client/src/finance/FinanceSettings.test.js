@@ -24,9 +24,9 @@ describe("FinanceSettings", () => {
     });
   });
 
-  function renderSettings() {
+  function renderSettings(path = "/") {
     return render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[path]}>
         <FinanceSettings />
       </MemoryRouter>,
     );
@@ -80,12 +80,9 @@ describe("FinanceSettings", () => {
   });
 
   it("switches to the Journals tab and uses the shared Accounts list for the picker", async () => {
-    renderSettings();
-    await screen.findByText("1000");
-
-    await userEvent.click(screen.getByRole("button", { name: "Journals" }));
+    renderSettings("/?tab=journals");
 
     expect(await screen.findByLabelText(/default account/i)).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "1000 — Cash" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "1000 — Cash" })).toBeInTheDocument();
   });
 });

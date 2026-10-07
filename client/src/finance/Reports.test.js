@@ -28,8 +28,9 @@ function mockGet({ trialBalance = [], ledgers = {} } = {}) {
 
 function renderReports(options) {
   mockGet(options);
+  const tab = options && options.ledgers ? "general-ledger" : "trial-balance";
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[`/?tab=${tab}`]}>
       <Reports />
     </MemoryRouter>,
   );
@@ -126,7 +127,6 @@ describe("Reports", () => {
         },
       });
 
-      await userEvent.click(screen.getByRole("button", { name: "General Ledger" }));
       expect(screen.getByText(/select an account to view its ledger/i)).toBeInTheDocument();
 
       await screen.findByRole("option", { name: "1000 — Cash" });
@@ -167,7 +167,6 @@ describe("Reports", () => {
         },
       });
 
-      await userEvent.click(screen.getByRole("button", { name: "General Ledger" }));
       await screen.findByRole("option", { name: "1000 — Cash" });
 
       await userEvent.selectOptions(screen.getByLabelText("Account"), "1");

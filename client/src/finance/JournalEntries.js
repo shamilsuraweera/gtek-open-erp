@@ -14,14 +14,13 @@ function JournalEntries() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Journal Entries</h1>
+      <div className="toolbar">
         {view === "list" ? (
-          <button type="button" onClick={() => setView("create")} style={{ padding: "8px 16px" }}>
+          <button type="button" className="btn-primary" onClick={() => setView("create")}>
             + New Entry
           </button>
         ) : (
-          <button type="button" onClick={() => setView("list")} style={{ padding: "8px 16px" }}>
+          <button type="button" onClick={() => setView("list")}>
             ← Back to List
           </button>
         )}

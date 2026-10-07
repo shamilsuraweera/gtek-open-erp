@@ -23,6 +23,9 @@ describe('UsersController', () => {
             updateRole: jest.fn(),
             resetPassword: jest.fn(),
             archive: jest.fn(),
+            getProfile: jest.fn(),
+            updateProfile: jest.fn(),
+            changeOwnPassword: jest.fn(),
           },
         },
       ],
@@ -44,6 +47,16 @@ describe('UsersController', () => {
     expect(service.updateRole).toHaveBeenCalledWith(2, 'Admin');
     expect(service.resetPassword).toHaveBeenCalledWith(2, 'newpassword');
     expect(service.archive).toHaveBeenCalledWith(2);
+  });
+
+  it('serves self-service profile calls from the authenticated user id', async () => {
+    await controller.getProfile(req);
+    await controller.updateProfile(req, { DisplayName: 'Ada' });
+    await controller.changeOwnPassword(req, { CurrentPassword: 'oldpassword1', NewPassword: 'newpassword1' });
+
+    expect(service.getProfile).toHaveBeenCalledWith(1);
+    expect(service.updateProfile).toHaveBeenCalledWith(1, { DisplayName: 'Ada' });
+    expect(service.changeOwnPassword).toHaveBeenCalledWith(1, 'oldpassword1', 'newpassword1');
   });
 
   it('refuses self-demotion and self-deactivation', () => {

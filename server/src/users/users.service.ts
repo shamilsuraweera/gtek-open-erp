@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -59,6 +59,35 @@ export class UsersService {
     user.PasswordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
     user.UpdatedAt = new Date();
     return toSafeUser(await this.usersRepository.save(user));
+  }
+
+  async getProfile(id: number): Promise<SafeUser> {
+    return toSafeUser(await this.getOrFail(id));
+  }
+
+  async updateProfile(id: number, changes: { DisplayName?: string; Email?: string }): Promise<SafeUser> {
+    const user = await this.getOrFail(id);
+
+    if (changes.Email !== undefined && changes.Email !== user.Email) {
+      if (await this.findByEmail(changes.Email)) {
+        throw new ConflictException('User already exists');
+      }
+      user.Email = changes.Email;
+    }
+    if (changes.DisplayName !== undefined) {
+      user.DisplayName = changes.DisplayName.trim() || null;
+    }
+
+    user.UpdatedAt = new Date();
+    return toSafeUser(await this.usersRepository.save(user));
+  }
+
+  async changeOwnPassword(id: number, currentPassword: string, newPassword: string): Promise<SafeUser> {
+    const user = await this.getOrFail(id);
+    if (!(await bcrypt.compare(currentPassword, user.PasswordHash))) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+    return this.resetPassword(id, newPassword);
   }
 
   async archive(id: number): Promise<SafeUser> {
