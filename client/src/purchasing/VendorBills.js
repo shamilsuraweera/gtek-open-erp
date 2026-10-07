@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useVendorBills } from "./useVendorBills";
 import VendorBillsList from "./VendorBillsList";
 import VendorBillForm from "./VendorBillForm";
@@ -14,21 +13,15 @@ function VendorBills() {
   };
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "40px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1 style={{ margin: 0 }}>Purchasing — Vendor Bills</h1>
-        <Link to="/" style={{ color: "#2563eb" }}>
-          ← Dashboard
-        </Link>
-      </div>
+    <div>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "16px" }}>
+      <div className="toolbar">
         {view === "list" ? (
-          <button type="button" onClick={() => setView("create")} style={{ padding: "8px 16px" }}>
+          <button type="button" className="btn-primary" onClick={() => setView("create")}>
             + New Vendor Bill
           </button>
         ) : (
-          <button type="button" onClick={() => setView("list")} style={{ padding: "8px 16px" }}>
+          <button type="button" onClick={() => setView("list")}>
             ← Back to List
           </button>
         )}

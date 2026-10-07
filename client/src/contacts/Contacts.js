@@ -1,14 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 // Reused directly from Finance rather than duplicated: both hook and table
 // are fully generic (parametrized by endpoint / columns config only), same
 // as how the Inventory module already reuses them.
 import { useReferenceData } from "../finance/useReferenceData";
 import ReferenceDataTable from "../finance/components/ReferenceDataTable";
 
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
-const checkboxLabelStyle = { display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", paddingBottom: "8px" };
 
 const EMPTY_FORM = {
   Name: "",
@@ -68,17 +64,11 @@ function Contacts() {
   };
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "40px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1 style={{ margin: 0 }}>Contacts</h1>
-        <Link to="/" style={{ color: "#2563eb" }}>
-          ← Dashboard
-        </Link>
-      </div>
+    <div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <form onSubmit={handleSubmit} className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="contact-name">
+          <label htmlFor="contact-name">
             Name
           </label>
           <input
@@ -87,11 +77,10 @@ function Contacts() {
             onChange={handleChange("Name")}
             required
             maxLength={200}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="contact-email">
+          <label htmlFor="contact-email">
             Email (optional)
           </label>
           <input
@@ -100,11 +89,10 @@ function Contacts() {
             value={form.Email}
             onChange={handleChange("Email")}
             maxLength={255}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="contact-phone">
+          <label htmlFor="contact-phone">
             Phone (optional)
           </label>
           <input
@@ -112,10 +100,9 @@ function Contacts() {
             value={form.Phone}
             onChange={handleChange("Phone")}
             maxLength={50}
-            style={inputStyle}
           />
         </div>
-        <label style={checkboxLabelStyle} htmlFor="contact-is-customer">
+        <label className="check-field" htmlFor="contact-is-customer">
           <input
             id="contact-is-customer"
             type="checkbox"
@@ -124,19 +111,18 @@ function Contacts() {
           />
           Customer
         </label>
-        <label style={checkboxLabelStyle} htmlFor="contact-is-vendor">
+        <label className="check-field" htmlFor="contact-is-vendor">
           <input id="contact-is-vendor" type="checkbox" checked={form.IsVendor} onChange={handleChange("IsVendor")} />
           Vendor
         </label>
         <div>
-          <label style={labelStyle} htmlFor="contact-ar-account">
+          <label htmlFor="contact-ar-account">
             AR Account (optional)
           </label>
           <select
             id="contact-ar-account"
             value={form.AccountsReceivableId}
             onChange={handleChange("AccountsReceivableId")}
-            style={inputStyle}
           >
             <option value="">— none —</option>
             {activeAccounts.map((account) => (
@@ -147,14 +133,13 @@ function Contacts() {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="contact-ap-account">
+          <label htmlFor="contact-ap-account">
             AP Account (optional)
           </label>
           <select
             id="contact-ap-account"
             value={form.AccountsPayableId}
             onChange={handleChange("AccountsPayableId")}
-            style={inputStyle}
           >
             <option value="">— none —</option>
             {activeAccounts.map((account) => (
@@ -164,13 +149,13 @@ function Contacts() {
             ))}
           </select>
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Contact"}
         </button>
       </form>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading contacts...</p>
       ) : (

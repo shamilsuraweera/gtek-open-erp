@@ -1,182 +1,167 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { usePreferences } from "../context/PreferencesContext";
+import Icon from "../layout/Icon";
+import { MODULES } from "../layout/navigation";
+import { getDisplayName } from "../layout/userDisplay";
+import { statusBadgeClass } from "../layout/status";
 import { useDashboard } from "./useDashboard";
+import "./dashboard.css";
 
 // Display-only formatting (never further arithmetic on the result), so
 // parsing through a JS Number here is safe — this is not one of the
 // money.js exact-decimal computation paths.
-function formatCurrency(value) {
+function formatCurrency(value, symbol = "$") {
   const number = Number(value ?? 0);
   const sign = number < 0 ? "-" : "";
   const formatted = Math.abs(number).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  return `${sign}$${formatted}`;
+  return `${sign}${symbol}${formatted}`;
 }
 
-const pageStyle = { fontFamily: "sans-serif", padding: "40px", background: "#f9fafb", minHeight: "100vh" };
-const navLinkStyle = { color: "#2563eb", textDecoration: "none", fontSize: "14px", fontWeight: 500 };
-const cardStyle = {
-  background: "white",
-  borderRadius: "12px",
-  padding: "24px",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
-  border: "1px solid #e5e7eb",
-};
-const metricLabelStyle = {
-  fontSize: "13px",
-  color: "#6b7280",
-  fontWeight: 600,
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-};
-const metricValueStyle = { fontSize: "32px", fontWeight: 700, color: "#111827", marginTop: "8px" };
-const panelStyle = { ...cardStyle, padding: "20px" };
-const thStyle = {
-  textAlign: "left",
-  padding: "8px 10px",
-  borderBottom: "2px solid #e5e7eb",
-  fontSize: "12px",
-  color: "#6b7280",
-  textTransform: "uppercase",
-};
-const tdStyle = { padding: "8px 10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" };
-const statusBadgeStyle = (status) => ({
-  padding: "3px 10px",
-  borderRadius: "999px",
-  fontSize: "11px",
-  fontWeight: "bold",
-  color: "white",
-  background: status === "Posted" ? "#16a34a" : status === "Cancelled" ? "#dc2626" : "#6b7280",
-});
+const APP_TILES = MODULES.filter((module) => module.key !== "dashboard");
 
-const NAV_LINKS = [
-  { to: "/finance", label: "Finance" },
-  { to: "/inventory", label: "Inventory" },
-  { to: "/contacts", label: "Contacts" },
-  { to: "/sales", label: "Sales" },
-  { to: "/purchasing", label: "Purchasing" },
-  { to: "/banking", label: "Banking" },
-];
-
-const ADMIN_LINK = { to: "/admin/users", label: "Security / Users" };
+function RecentTable({ title, viewAllTo, columns, rows, emptyLabel, symbol }) {
+  return (
+    <section className="card dash-panel">
+      <div className="dash-panel-head">
+        <h2 className="card-title">{title}</h2>
+        <Link to={viewAllTo} className="dash-link">
+          View all <Icon name="arrowRight" size={14} />
+        </Link>
+      </div>
+      {rows.length === 0 ? (
+        <p className="msg msg-muted">{emptyLabel}</p>
+      ) : (
+        <table className="table table-flat">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th key={column}>{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <td>{row.number || <span className="text-faint">(unposted)</span>}</td>
+                <td>{row.party}</td>
+                <td className="num">{formatCurrency(row.amount, symbol)}</td>
+                <td>
+                  <span className={statusBadgeClass(row.status)}>{row.status}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+}
 
 function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { currencySymbol } = usePreferences();
   const { metrics, recentInvoices, recentVendorBills, isLoading, error } = useDashboard();
 
   return (
-    <div style={pageStyle}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+    <div className="dashboard">
+      <div className="page-head dash-head">
         <div>
-          <h1 style={{ margin: 0 }}>G‑TEK ERP</h1>
-          <p style={{ margin: "4px 0 0", color: "#6b7280" }}>Command Center</p>
+          <h1>Welcome back, {getDisplayName(user)}</h1>
+          <p className="dash-sub">Command Center — a live view of sales, purchasing and cash position.</p>
         </div>
-        <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
-          {[...NAV_LINKS, ...(user?.role === "Admin" ? [ADMIN_LINK] : [])].map((link) => (
-            <Link key={link.to} to={link.to} style={navLinkStyle}>
-              {link.label} →
-            </Link>
-          ))}
-          <button onClick={logout} style={{ padding: "8px 16px" }}>
-            Log out{user?.email ? ` (${user.email})` : ""}
-          </button>
+        <div className="dash-actions">
+          <Link to="/sales" className="btn-link btn-link-primary">
+            <Icon name="plus" size={16} /> New invoice
+          </Link>
+          <Link to="/purchasing" className="btn-link">
+            <Icon name="plus" size={16} /> New vendor bill
+          </Link>
         </div>
       </div>
 
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
-      {isLoading && <p>Loading dashboard...</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+      {isLoading && <p className="msg msg-muted">Loading dashboard...</p>}
 
       {!isLoading && metrics && (
         <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "20px",
-              marginBottom: "32px",
-            }}
-          >
-            <div style={cardStyle}>
-              <div style={metricLabelStyle}>Revenue This Month</div>
-              <div style={{ ...metricValueStyle, color: "#16a34a" }}>
-                {formatCurrency(metrics.revenueThisMonth)}
+          <div className="kpi-grid">
+            <div className="card kpi kpi-success">
+              <span className="kpi-icon">
+                <Icon name="sales" size={22} />
+              </span>
+              <div>
+                <div className="kpi-label">Revenue This Month</div>
+                <div className="kpi-value">{formatCurrency(metrics.revenueThisMonth, currencySymbol)}</div>
               </div>
             </div>
-            <div style={cardStyle}>
-              <div style={metricLabelStyle}>Unpaid AR</div>
-              <div style={metricValueStyle}>{formatCurrency(metrics.unpaidAR)}</div>
+            <div className="card kpi kpi-primary">
+              <span className="kpi-icon">
+                <Icon name="finance" size={22} />
+              </span>
+              <div>
+                <div className="kpi-label">Unpaid AR</div>
+                <div className="kpi-value">{formatCurrency(metrics.unpaidAR, currencySymbol)}</div>
+              </div>
             </div>
-            <div style={cardStyle}>
-              <div style={metricLabelStyle}>Unpaid AP</div>
-              <div style={{ ...metricValueStyle, color: "#dc2626" }}>{formatCurrency(metrics.unpaidAP)}</div>
+            <div className="card kpi kpi-danger">
+              <span className="kpi-icon">
+                <Icon name="purchasing" size={22} />
+              </span>
+              <div>
+                <div className="kpi-label">Unpaid AP</div>
+                <div className="kpi-value">{formatCurrency(metrics.unpaidAP, currencySymbol)}</div>
+              </div>
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-            <div style={panelStyle}>
-              <h3 style={{ marginTop: 0 }}>Recent Sales</h3>
-              {recentInvoices.length === 0 ? (
-                <p style={{ color: "#6b7280" }}>No recent invoices.</p>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      <th style={thStyle}>Number</th>
-                      <th style={thStyle}>Customer</th>
-                      <th style={thStyle}>Amount</th>
-                      <th style={thStyle}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentInvoices.map((invoice) => (
-                      <tr key={invoice.Id}>
-                        <td style={tdStyle}>{invoice.InvoiceNumber || "(unposted)"}</td>
-                        <td style={tdStyle}>{invoice.Contact ? invoice.Contact.Name : "—"}</td>
-                        <td style={tdStyle}>{formatCurrency(invoice.TotalAmount)}</td>
-                        <td style={tdStyle}>
-                          <span style={statusBadgeStyle(invoice.Status)}>{invoice.Status}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            <div style={panelStyle}>
-              <h3 style={{ marginTop: 0 }}>Recent Purchases</h3>
-              {recentVendorBills.length === 0 ? (
-                <p style={{ color: "#6b7280" }}>No recent vendor bills.</p>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      <th style={thStyle}>Number</th>
-                      <th style={thStyle}>Vendor</th>
-                      <th style={thStyle}>Amount</th>
-                      <th style={thStyle}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentVendorBills.map((bill) => (
-                      <tr key={bill.Id}>
-                        <td style={tdStyle}>{bill.BillNumber || "(unposted)"}</td>
-                        <td style={tdStyle}>{bill.Contact ? bill.Contact.Name : "—"}</td>
-                        <td style={tdStyle}>{formatCurrency(bill.TotalAmount)}</td>
-                        <td style={tdStyle}>
-                          <span style={statusBadgeStyle(bill.Status)}>{bill.Status}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+          <div className="dash-panels">
+            <RecentTable
+              symbol={currencySymbol}
+              title="Recent Sales"
+              viewAllTo="/sales"
+              columns={["Number", "Customer", "Amount", "Status"]}
+              emptyLabel="No recent invoices."
+              rows={recentInvoices.map((invoice) => ({
+                id: invoice.Id,
+                number: invoice.InvoiceNumber,
+                party: invoice.Contact ? invoice.Contact.Name : "—",
+                amount: invoice.TotalAmount,
+                status: invoice.Status,
+              }))}
+            />
+            <RecentTable
+              symbol={currencySymbol}
+              title="Recent Purchases"
+              viewAllTo="/purchasing"
+              columns={["Number", "Vendor", "Amount", "Status"]}
+              emptyLabel="No recent vendor bills."
+              rows={recentVendorBills.map((bill) => ({
+                id: bill.Id,
+                number: bill.BillNumber,
+                party: bill.Contact ? bill.Contact.Name : "—",
+                amount: bill.TotalAmount,
+                status: bill.Status,
+              }))}
+            />
           </div>
         </>
       )}
+
+      <h2 className="dash-section">Apps</h2>
+      <div className="app-grid">
+        {APP_TILES.map((module) => (
+          <Link key={module.key} to={module.basePath} className="app-tile">
+            <span className="app-tile-icon">
+              <Icon name={module.icon} size={24} />
+            </span>
+            <span className="app-tile-label">{module.label}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

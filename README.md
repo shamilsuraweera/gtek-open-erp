@@ -63,6 +63,46 @@ npm start
 
 ---
 
+## 👤 Creating the First Admin User
+
+The database ships with no seed data, so a fresh install has no users and nobody can log in. Create the first user through the public registration endpoint with the `Admin` role. `Admin` is the highest role in the app (`Admin` > `User`) and is the only one that can open **Security / Users** and manage other accounts.
+
+Make sure the backend is running on port `3000` and the `Users` table exists (`sql/02_create_users_table.sql`), then run:
+
+**macOS / Linux / Git Bash**
+```bash
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"testadmin@example.com","password":"SecurePassword123!","role":"Admin"}'
+```
+
+**Windows PowerShell**
+```powershell
+curl.exe -X POST http://localhost:3000/auth/register `
+  -H "Content-Type: application/json" `
+  -d '{\"email\":\"testadmin@example.com\",\"password\":\"SecurePassword123!\",\"role\":\"Admin\"}'
+```
+
+What the command does:
+- `POST /auth/register` creates a user. The password is hashed with bcrypt before it is stored; the plain text is never saved.
+- `email` must be a valid email and unique. Registering the same email again returns `400 Email already in use`.
+- `password` must be at least 8 characters.
+- `role` is optional and must be `Admin` or `User`. If omitted it defaults to `User`, which cannot access the admin screens.
+- A successful response returns the new user without the password hash (`Id`, `Email`, `Role`, `IsActive`, `CreatedAt`).
+
+You can then sign in at `http://localhost:3001/login` with `testadmin@example.com` / `SecurePassword123!`. To verify from the terminal:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"testadmin@example.com","password":"SecurePassword123!"}'
+```
+This returns an `access_token` (JWT) used as `Authorization: Bearer <token>` on every other endpoint.
+
+> ⚠️ **Development only.** These credentials are public in this repository. Change the password (Security / Users → Reset Password) or create a different admin before using the system with real data. Note that `/auth/register` is currently open to anyone and accepts `"role":"Admin"`, so it must be locked down (or disabled once the first admin exists) before any deployment. Once an admin exists, create further users from **Security / Users** instead.
+
+---
+
 ## 🔌 API Endpoints & Health Checks
 
 - **`GET /`** — Backend root connectivity check.
@@ -94,6 +134,3 @@ The NestJS backend enforces strict CORS policies allowing communication exclusiv
 - **Shamil Suraweera** — Developer (Frontend/Backend Integration, CORS Resolution, Project Architecture)
 - **Backend Support** — NestJS Module Configuration & Database Entities
 - **Frontend Support** — React UI Components & Dashboard Layouts
-
-- testadmin@example.com
-- SecurePassword123!

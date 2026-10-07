@@ -1,21 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import apiClient from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { statusBadgeClass } from "../layout/status";
 
 const ROLES = ["Admin", "User"];
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
-const thStyle = { textAlign: "left", padding: "8px", borderBottom: "2px solid #e5e7eb", fontSize: "13px" };
-const tdStyle = { padding: "8px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" };
-const badgeStyle = (active) => ({
-  padding: "3px 10px",
-  borderRadius: "999px",
-  fontSize: "11px",
-  fontWeight: "bold",
-  color: "white",
-  background: active ? "#16a34a" : "#6b7280",
-});
+
 const EMPTY_FORM = { Email: "", Password: "", Role: "User" };
 
 function UserAdmin() {
@@ -81,32 +70,25 @@ function UserAdmin() {
   const handleDeactivate = (target) => run(() => apiClient.delete(`/users/${target.Id}`));
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "40px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1 style={{ margin: 0 }}>Security / Users</h1>
-        <Link to="/" style={{ color: "#2563eb" }}>
-          ← Dashboard
-        </Link>
-      </div>
+    <div>
 
       <form
         onSubmit={handleCreate}
         aria-label="Create user"
-        style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end", margin: "24px 0" }}
+        className="form-row"
       >
         <div>
-          <label htmlFor="new-email" style={labelStyle}>Email</label>
+          <label htmlFor="new-email">Email</label>
           <input
             id="new-email"
             type="email"
             required
             value={form.Email}
             onChange={(e) => setForm({ ...form, Email: e.target.value })}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label htmlFor="new-password" style={labelStyle}>Password</label>
+          <label htmlFor="new-password">Password</label>
           <input
             id="new-password"
             type="password"
@@ -114,39 +96,37 @@ function UserAdmin() {
             minLength={8}
             value={form.Password}
             onChange={(e) => setForm({ ...form, Password: e.target.value })}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label htmlFor="new-role" style={labelStyle}>Role</label>
+          <label htmlFor="new-role">Role</label>
           <select
             id="new-role"
             value={form.Role}
             onChange={(e) => setForm({ ...form, Role: e.target.value })}
-            style={inputStyle}
           >
             {ROLES.map((role) => (
               <option key={role} value={role}>{role}</option>
             ))}
           </select>
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create User"}
         </button>
       </form>
 
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading && <p>Loading users...</p>}
 
       {!isLoading && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table className="table">
           <thead>
             <tr>
-              <th style={thStyle}>Email</th>
-              <th style={thStyle}>Role</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Created</th>
-              <th style={thStyle}>Actions</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -155,15 +135,15 @@ function UserAdmin() {
               const isEditing = editing?.id === row.Id;
               return (
                 <tr key={row.Id}>
-                  <td style={tdStyle}>{row.Email}</td>
-                  <td style={tdStyle}>{row.Role}</td>
-                  <td style={tdStyle}>
-                    <span style={badgeStyle(row.IsActive)}>{row.IsActive ? "Active" : "Inactive"}</span>
+                  <td>{row.Email}</td>
+                  <td>{row.Role}</td>
+                  <td>
+                    <span className={statusBadgeClass(row.IsActive)}>{row.IsActive ? "Active" : "Inactive"}</span>
                   </td>
-                  <td style={tdStyle}>{new Date(row.CreatedAt).toLocaleDateString()}</td>
-                  <td style={tdStyle}>
+                  <td>{new Date(row.CreatedAt).toLocaleDateString()}</td>
+                  <td>
                     {isEditing ? (
-                      <form onSubmit={submitEdit} style={{ display: "flex", gap: "6px" }}>
+                      <form onSubmit={submitEdit} className="inline-actions">
                         {editing.type === "role" ? (
                           <select
                             aria-label="New role"
@@ -189,7 +169,7 @@ function UserAdmin() {
                         <button type="button" onClick={() => setEditing(null)}>Cancel</button>
                       </form>
                     ) : (
-                      <div style={{ display: "flex", gap: "6px" }}>
+                      <div className="inline-actions">
                         <button onClick={() => startEdit(row, "password")}>Reset Password</button>
                         <button onClick={() => startEdit(row, "role")} disabled={isSelf}>Change Role</button>
                         <button onClick={() => handleDeactivate(row)} disabled={isSelf || !row.IsActive}>

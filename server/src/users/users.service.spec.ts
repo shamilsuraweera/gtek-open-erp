@@ -128,6 +128,29 @@ describe('UsersService', () => {
       expect((await service.archive(5)).IsActive).toBe(false);
     });
 
+    it('updateProfile sets a trimmed display name and rejects a taken email', async () => {
+      repository.save.mockImplementation(async (v) => v as User);
+      repository.findOneBy.mockResolvedValueOnce(stored());
+      const updated = await service.updateProfile(5, { DisplayName: '  Ada  ' });
+      expect(updated.DisplayName).toBe('Ada');
+
+      repository.findOneBy
+        .mockResolvedValueOnce(stored()) // getOrFail
+        .mockResolvedValueOnce({ Id: 9, Email: 'taken@b.com' } as User); // findByEmail
+      await expect(service.updateProfile(5, { Email: 'taken@b.com' })).rejects.toThrow('already exists');
+    });
+
+    it('changeOwnPassword requires the correct current password', async () => {
+      const PasswordHash = await bcrypt.hash('oldpassword1', 4);
+      repository.findOneBy.mockResolvedValue({ ...stored(), PasswordHash } as User);
+      repository.save.mockImplementation(async (v) => v as User);
+
+      await expect(service.changeOwnPassword(5, 'wrong-one', 'newpassword1')).rejects.toThrow('incorrect');
+      await service.changeOwnPassword(5, 'oldpassword1', 'newpassword1');
+      const saved = repository.save.mock.calls[0][0] as User;
+      expect(await bcrypt.compare('newpassword1', saved.PasswordHash)).toBe(true);
+    });
+
     it('throws NotFound for an unknown id', async () => {
       repository.findOneBy.mockResolvedValue(null);
       await expect(service.archive(99)).rejects.toThrow('not found');

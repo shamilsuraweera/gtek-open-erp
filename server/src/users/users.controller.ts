@@ -18,6 +18,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('Admin')
@@ -28,7 +30,19 @@ export class UsersController {
   @Get('me')
   @Roles('Admin', 'User')
   getProfile(@Request() req) {
-    return req.user;
+    return this.usersService.getProfile(req.user.id);
+  }
+
+  @Patch('me')
+  @Roles('Admin', 'User')
+  updateProfile(@Request() req, @Body() dto: UpdateProfileDto) {
+    return this.usersService.updateProfile(req.user.id, dto);
+  }
+
+  @Patch('me/password')
+  @Roles('Admin', 'User')
+  changeOwnPassword(@Request() req, @Body() dto: ChangePasswordDto) {
+    return this.usersService.changeOwnPassword(req.user.id, dto.CurrentPassword, dto.NewPassword);
   }
 
   @Get()

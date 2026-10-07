@@ -8,10 +8,6 @@ function makeBlankLine() {
   return { key: `line-${lineKeySeq}`, ProductId: "", Quantity: "1", UnitPrice: "" };
 }
 
-const inputStyle = { padding: "8px", boxSizing: "border-box", width: "100%" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
-const thStyle = { textAlign: "left", padding: "6px 8px", fontSize: "12px", color: "#6b7280", textTransform: "uppercase" };
-const tdStyle = { padding: "6px 8px" };
 
 // onSubmit is the caller's createDraft (from useInvoices) — this component
 // never calls apiClient for the create itself, so the invoice list (owned
@@ -102,12 +98,12 @@ function InvoiceForm({ onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="card-form">
       <h2>New Invoice</h2>
 
-      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "20px" }}>
+      <div className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="inv-contact">
+          <label htmlFor="inv-contact">
             Customer
           </label>
           <select
@@ -115,7 +111,6 @@ function InvoiceForm({ onSubmit, onCancel }) {
             value={contactId}
             onChange={(event) => setContactId(event.target.value)}
             required
-            style={inputStyle}
           >
             <option value="">Select...</option>
             {activeContacts.map((contact) => (
@@ -126,7 +121,7 @@ function InvoiceForm({ onSubmit, onCancel }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="inv-date">
+          <label htmlFor="inv-date">
             Date
           </label>
           <input
@@ -135,11 +130,10 @@ function InvoiceForm({ onSubmit, onCancel }) {
             value={date}
             onChange={(event) => setDate(event.target.value)}
             required
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="inv-due-date">
+          <label htmlFor="inv-due-date">
             Due Date
           </label>
           <input
@@ -148,30 +142,28 @@ function InvoiceForm({ onSubmit, onCancel }) {
             value={dueDate}
             onChange={(event) => setDueDate(event.target.value)}
             required
-            style={inputStyle}
           />
         </div>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table className="table">
         <thead>
           <tr>
-            <th style={thStyle}>Product</th>
-            <th style={thStyle}>Quantity</th>
-            <th style={thStyle}>Unit Price</th>
-            <th style={thStyle}>Line Total</th>
-            <th style={thStyle} />
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+            <th />
           </tr>
         </thead>
         <tbody>
           {lines.map((line, index) => (
             <tr key={line.key}>
-              <td style={tdStyle}>
+              <td>
                 <select
                   value={line.ProductId}
                   onChange={(event) => updateLine(line.key, "ProductId", event.target.value)}
                   required
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} product`}
                 >
                   <option value="">Select...</option>
@@ -182,33 +174,30 @@ function InvoiceForm({ onSubmit, onCancel }) {
                   ))}
                 </select>
               </td>
-              <td style={tdStyle}>
+              <td>
                 <input
                   value={line.Quantity}
                   onChange={(event) => updateLine(line.key, "Quantity", event.target.value)}
                   type="number"
                   min="0"
                   step="any"
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} quantity`}
                 />
               </td>
-              <td style={tdStyle}>
+              <td>
                 <input
                   value={line.UnitPrice}
                   onChange={(event) => updateLine(line.key, "UnitPrice", event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} unit price`}
                 />
               </td>
-              <td style={tdStyle}>{fromMinorUnits(lineTotalsMinor[index] ?? 0)}</td>
-              <td style={tdStyle}>
+              <td>{fromMinorUnits(lineTotalsMinor[index] ?? 0)}</td>
+              <td>
                 <button
                   type="button"
                   onClick={() => removeLine(line.key)}
-                  style={{ padding: "4px 8px", cursor: "pointer" }}
                 >
                   Remove
                 </button>
@@ -218,28 +207,21 @@ function InvoiceForm({ onSubmit, onCancel }) {
         </tbody>
       </table>
 
-      <button type="button" onClick={addLine} style={{ marginTop: "8px", padding: "6px 12px" }}>
+      <button type="button" onClick={addLine}>
         + Add Line
       </button>
 
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "12px 16px",
-          background: "#f9fafb",
-          borderRadius: "6px",
-        }}
-      >
+      <div className="summary-bar">
         <strong>Total Amount:</strong> {fromMinorUnits(totalMinor)}
       </div>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
 
-      <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
-        <button type="submit" disabled={!canSave} style={{ padding: "10px 20px" }}>
+      <div className="form-actions">
+        <button type="submit" disabled={!canSave}>
           {isSubmitting ? "Saving..." : "Save Draft"}
         </button>
-        <button type="button" onClick={onCancel} style={{ padding: "10px 20px" }}>
+        <button type="button" onClick={onCancel}>
           Cancel
         </button>
       </div>

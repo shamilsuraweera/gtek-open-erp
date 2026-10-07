@@ -8,10 +8,6 @@ function makeBlankLine() {
   return { key: `line-${lineKeySeq}`, AccountId: "", Description: "", Debit: "", Credit: "" };
 }
 
-const inputStyle = { padding: "8px", boxSizing: "border-box", width: "100%" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
-const thStyle = { textAlign: "left", padding: "6px 8px", fontSize: "12px", color: "#6b7280", textTransform: "uppercase" };
-const tdStyle = { padding: "6px 8px" };
 
 // onSubmit is the caller's createDraft (from useJournalEntries) — this
 // component never calls apiClient for the create itself, so the entries
@@ -95,12 +91,12 @@ function JournalEntryForm({ onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="card-form">
       <h2>New Journal Entry</h2>
 
-      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "20px" }}>
+      <div className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="je-journal">
+          <label htmlFor="je-journal">
             Journal
           </label>
           <select
@@ -108,7 +104,6 @@ function JournalEntryForm({ onSubmit, onCancel }) {
             value={journalId}
             onChange={(event) => setJournalId(event.target.value)}
             required
-            style={inputStyle}
           >
             <option value="">Select...</option>
             {activeJournals.map((journal) => (
@@ -119,7 +114,7 @@ function JournalEntryForm({ onSubmit, onCancel }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="je-date">
+          <label htmlFor="je-date">
             Date
           </label>
           <input
@@ -128,11 +123,10 @@ function JournalEntryForm({ onSubmit, onCancel }) {
             value={entryDate}
             onChange={(event) => setEntryDate(event.target.value)}
             required
-            style={inputStyle}
           />
         </div>
-        <div style={{ flex: 1, minWidth: "220px" }}>
-          <label style={labelStyle} htmlFor="je-narration">
+        <div className="grow">
+          <label htmlFor="je-narration">
             Narration
           </label>
           <input
@@ -140,30 +134,28 @@ function JournalEntryForm({ onSubmit, onCancel }) {
             value={narration}
             onChange={(event) => setNarration(event.target.value)}
             maxLength={500}
-            style={inputStyle}
           />
         </div>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table className="table">
         <thead>
           <tr>
-            <th style={thStyle}>Account</th>
-            <th style={thStyle}>Description</th>
-            <th style={thStyle}>Debit</th>
-            <th style={thStyle}>Credit</th>
-            <th style={thStyle} />
+            <th>Account</th>
+            <th>Description</th>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th />
           </tr>
         </thead>
         <tbody>
           {lines.map((line, index) => (
             <tr key={line.key}>
-              <td style={tdStyle}>
+              <td>
                 <select
                   value={line.AccountId}
                   onChange={(event) => updateLine(line.key, "AccountId", event.target.value)}
                   required
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} account`}
                 >
                   <option value="">Select...</option>
@@ -174,40 +166,36 @@ function JournalEntryForm({ onSubmit, onCancel }) {
                   ))}
                 </select>
               </td>
-              <td style={tdStyle}>
+              <td>
                 <input
                   value={line.Description}
                   onChange={(event) => updateLine(line.key, "Description", event.target.value)}
                   maxLength={500}
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} description`}
                 />
               </td>
-              <td style={tdStyle}>
+              <td>
                 <input
                   value={line.Debit}
                   onChange={(event) => updateLine(line.key, "Debit", event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} debit`}
                 />
               </td>
-              <td style={tdStyle}>
+              <td>
                 <input
                   value={line.Credit}
                   onChange={(event) => updateLine(line.key, "Credit", event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
-                  style={inputStyle}
                   aria-label={`Line ${index + 1} credit`}
                 />
               </td>
-              <td style={tdStyle}>
+              <td>
                 <button
                   type="button"
                   onClick={() => removeLine(line.key)}
-                  style={{ padding: "4px 8px", cursor: "pointer" }}
                 >
                   Remove
                 </button>
@@ -217,39 +205,29 @@ function JournalEntryForm({ onSubmit, onCancel }) {
         </tbody>
       </table>
 
-      <button type="button" onClick={addLine} style={{ marginTop: "8px", padding: "6px 12px" }}>
+      <button type="button" onClick={addLine}>
         + Add Line
       </button>
 
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "12px 16px",
-          background: "#f9fafb",
-          borderRadius: "6px",
-          display: "flex",
-          gap: "24px",
-          alignItems: "center",
-        }}
-      >
+      <div className="summary-bar">
         <div>
           <strong>Total Debit:</strong> {fromMinorUnits(totalDebitMinor)}
         </div>
         <div>
           <strong>Total Credit:</strong> {fromMinorUnits(totalCreditMinor)}
         </div>
-        <div style={{ color: isBalanced ? "#16a34a" : "#dc2626", fontWeight: "bold" }}>
+        <div className={isBalanced ? "text-success strong" : "text-danger strong"}>
           {isBalanced ? "Balanced" : "Not balanced"}
         </div>
       </div>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
 
-      <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
-        <button type="submit" disabled={!canSave} style={{ padding: "10px 20px" }}>
+      <div className="form-actions">
+        <button type="submit" disabled={!canSave}>
           {isSubmitting ? "Saving..." : "Save Draft"}
         </button>
-        <button type="button" onClick={onCancel} style={{ padding: "10px 20px" }}>
+        <button type="button" onClick={onCancel}>
           Cancel
         </button>
       </div>

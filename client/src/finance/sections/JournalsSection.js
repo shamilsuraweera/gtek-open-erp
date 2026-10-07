@@ -2,8 +2,6 @@ import { useState } from "react";
 import ReferenceDataTable from "../components/ReferenceDataTable";
 
 const JOURNAL_TYPES = ["Sales", "Purchase", "Bank", "Cash", "General"];
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
 
 const EMPTY_FORM = {
   Code: "",
@@ -56,34 +54,30 @@ function JournalsSection({ journalsData, accounts }) {
 
   return (
     <div>
-      <h2>Journals</h2>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <form onSubmit={handleSubmit} className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="journal-code">Code</label>
+          <label htmlFor="journal-code">Code</label>
           <input
             id="journal-code"
             value={form.Code}
             onChange={handleChange("Code")}
             required
             maxLength={10}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="journal-name">Name</label>
+          <label htmlFor="journal-name">Name</label>
           <input
             id="journal-name"
             value={form.Name}
             onChange={handleChange("Name")}
             required
             maxLength={100}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="journal-type">Type</label>
-          <select id="journal-type" value={form.Type} onChange={handleChange("Type")} style={inputStyle}>
+          <label htmlFor="journal-type">Type</label>
+          <select id="journal-type" value={form.Type} onChange={handleChange("Type")}>
             {JOURNAL_TYPES.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -92,12 +86,11 @@ function JournalsSection({ journalsData, accounts }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="journal-default-account">Default Account (optional)</label>
+          <label htmlFor="journal-default-account">Default Account (optional)</label>
           <select
             id="journal-default-account"
             value={form.DefaultAccountId}
             onChange={handleChange("DefaultAccountId")}
-            style={inputStyle}
           >
             <option value="">— none —</option>
             {activeAccounts.map((account) => (
@@ -108,23 +101,22 @@ function JournalsSection({ journalsData, accounts }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="journal-prefix">Sequence Prefix (optional)</label>
+          <label htmlFor="journal-prefix">Sequence Prefix (optional)</label>
           <input
             id="journal-prefix"
             value={form.SequencePrefix}
             onChange={handleChange("SequencePrefix")}
             maxLength={20}
             placeholder="e.g. INV/"
-            style={inputStyle}
           />
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Journal"}
         </button>
       </form>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading journals...</p>
       ) : (

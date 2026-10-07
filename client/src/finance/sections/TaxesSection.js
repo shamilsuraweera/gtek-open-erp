@@ -4,8 +4,6 @@ import ReferenceDataTable from "../components/ReferenceDataTable";
 const AMOUNT_TYPES = ["Percentage", "Fixed"];
 const TAX_SCOPES = ["Sales", "Purchase"];
 const DECIMAL_PATTERN = "^\\d+(\\.\\d{1,4})?$";
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
 
 const EMPTY_FORM = {
   Code: "",
@@ -69,34 +67,30 @@ function TaxesSection({ taxesData, accounts }) {
 
   return (
     <div>
-      <h2>Taxes</h2>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <form onSubmit={handleSubmit} className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="tax-code">Code</label>
+          <label htmlFor="tax-code">Code</label>
           <input
             id="tax-code"
             value={form.Code}
             onChange={handleChange("Code")}
             required
             maxLength={20}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="tax-name">Name</label>
+          <label htmlFor="tax-name">Name</label>
           <input
             id="tax-name"
             value={form.Name}
             onChange={handleChange("Name")}
             required
             maxLength={100}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="tax-amount-type">Amount Type</label>
-          <select id="tax-amount-type" value={form.AmountType} onChange={handleChange("AmountType")} style={inputStyle}>
+          <label htmlFor="tax-amount-type">Amount Type</label>
+          <select id="tax-amount-type" value={form.AmountType} onChange={handleChange("AmountType")}>
             {AMOUNT_TYPES.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -105,7 +99,7 @@ function TaxesSection({ taxesData, accounts }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="tax-amount">Amount</label>
+          <label htmlFor="tax-amount">Amount</label>
           <input
             id="tax-amount"
             value={form.Amount}
@@ -113,12 +107,11 @@ function TaxesSection({ taxesData, accounts }) {
             required
             pattern={DECIMAL_PATTERN}
             placeholder="e.g. 15 or 15.0000"
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="tax-scope">Scope</label>
-          <select id="tax-scope" value={form.Scope} onChange={handleChange("Scope")} style={inputStyle}>
+          <label htmlFor="tax-scope">Scope</label>
+          <select id="tax-scope" value={form.Scope} onChange={handleChange("Scope")}>
             {TAX_SCOPES.map((scope) => (
               <option key={scope} value={scope}>
                 {scope}
@@ -127,13 +120,12 @@ function TaxesSection({ taxesData, accounts }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="tax-account">Tax Account</label>
+          <label htmlFor="tax-account">Tax Account</label>
           <select
             id="tax-account"
             value={form.TaxAccountId}
             onChange={handleChange("TaxAccountId")}
             required
-            style={inputStyle}
           >
             <option value="">Select...</option>
             {activeAccounts.map((account) => (
@@ -143,24 +135,24 @@ function TaxesSection({ taxesData, accounts }) {
             ))}
           </select>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingBottom: "8px" }}>
+        <div className="check-field">
           <input
             id="tax-price-included"
             type="checkbox"
             checked={form.IsPriceIncluded}
             onChange={handleChange("IsPriceIncluded")}
           />
-          <label htmlFor="tax-price-included" style={{ fontSize: "13px" }}>
+          <label htmlFor="tax-price-included">
             Price includes tax
           </label>
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Tax"}
         </button>
       </form>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading taxes...</p>
       ) : (

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import "./login.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -28,47 +29,60 @@ function Login() {
   };
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "40px", maxWidth: "360px", margin: "0 auto" }}>
-      <h1>G‑TEK ERP — Sign In</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "16px" }}>
-          <label htmlFor="email" style={{ display: "block", marginBottom: "4px" }}>
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
-          />
+    <div className="auth">
+      <aside className="auth-brand" aria-hidden="true">
+        <div className="auth-brand-inner">
+          <span className="brand-mark brand-mark-lg">G</span>
+          <h2>G-TEK ERP</h2>
+          <p>Finance, sales, purchasing, inventory and banking — one workspace for the whole business.</p>
+          <ul>
+            <li>Double-entry accounting with exact decimal maths</li>
+            <li>Invoices, vendor bills and bank reconciliation</li>
+            <li>Role-based access for your whole team</li>
+          </ul>
         </div>
+      </aside>
 
-        <div style={{ marginBottom: "16px" }}>
-          <label htmlFor="password" style={{ display: "block", marginBottom: "4px" }}>
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
-          />
-        </div>
+      <main className="auth-panel">
+        <form className="auth-card" onSubmit={handleSubmit}>
+          <h1>Sign in</h1>
+          <p className="auth-sub">Welcome back. Enter your credentials to continue.</p>
 
-        {error && (
-          <div role="alert" style={{ color: "#dc2626", marginBottom: "16px" }}>
-            {error}
+          <div className="auth-field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="username"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
           </div>
-        )}
 
-        <button type="submit" disabled={isSubmitting} style={{ width: "100%", padding: "10px 16px" }}>
-          {isSubmitting ? "Signing in..." : "Sign In"}
-        </button>
-      </form>
+          <div className="auth-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+          </div>
+
+          {error && (
+            <div role="alert" className="msg msg-error">
+              {error}
+            </div>
+          )}
+
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+      </main>
     </div>
   );
 }

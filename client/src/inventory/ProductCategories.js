@@ -5,8 +5,6 @@ import { useState } from "react";
 import { useReferenceData } from "../finance/useReferenceData";
 import ReferenceDataTable from "../finance/components/ReferenceDataTable";
 
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
 
 const EMPTY_FORM = { Name: "", Description: "", IncomeAccountId: "", ExpenseAccountId: "" };
 
@@ -55,11 +53,9 @@ function ProductCategories() {
 
   return (
     <div>
-      <h2>Product Categories</h2>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <form onSubmit={handleSubmit} className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="category-name">
+          <label htmlFor="category-name">
             Name
           </label>
           <input
@@ -68,11 +64,10 @@ function ProductCategories() {
             onChange={handleChange("Name")}
             required
             maxLength={200}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="category-description">
+          <label htmlFor="category-description">
             Description (optional)
           </label>
           <input
@@ -80,18 +75,16 @@ function ProductCategories() {
             value={form.Description}
             onChange={handleChange("Description")}
             maxLength={500}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="category-income-account">
+          <label htmlFor="category-income-account">
             Income Account (optional)
           </label>
           <select
             id="category-income-account"
             value={form.IncomeAccountId}
             onChange={handleChange("IncomeAccountId")}
-            style={inputStyle}
           >
             <option value="">— none —</option>
             {activeAccounts.map((account) => (
@@ -102,14 +95,13 @@ function ProductCategories() {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="category-expense-account">
+          <label htmlFor="category-expense-account">
             Expense Account (optional)
           </label>
           <select
             id="category-expense-account"
             value={form.ExpenseAccountId}
             onChange={handleChange("ExpenseAccountId")}
-            style={inputStyle}
           >
             <option value="">— none —</option>
             {activeAccounts.map((account) => (
@@ -119,13 +111,13 @@ function ProductCategories() {
             ))}
           </select>
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Category"}
         </button>
       </form>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading categories...</p>
       ) : (

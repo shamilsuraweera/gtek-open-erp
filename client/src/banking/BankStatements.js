@@ -9,17 +9,6 @@ function makeBlankLine() {
   return { key: `line-${lineKeySeq}`, Date: "", Description: "", Amount: "" };
 }
 
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
-const thStyle = {
-  textAlign: "left",
-  padding: "8px 12px",
-  borderBottom: "2px solid #e5e7eb",
-  fontSize: "13px",
-  color: "#6b7280",
-  textTransform: "uppercase",
-};
-const tdStyle = { padding: "8px 12px", borderBottom: "1px solid #f3f4f6" };
 
 const EMPTY_FORM = { AccountId: "", StatementDate: "", Reference: "", StartingBalance: "" };
 
@@ -95,12 +84,10 @@ function BankStatements() {
 
   return (
     <div>
-      <h2>Bank Statements</h2>
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "20px" }}>
+      <form onSubmit={handleSubmit} className="card-form">
+        <div className="form-row">
           <div>
-            <label style={labelStyle} htmlFor="stmt-account">
+            <label htmlFor="stmt-account">
               Account
             </label>
             <select
@@ -108,7 +95,6 @@ function BankStatements() {
               value={form.AccountId}
               onChange={handleFormChange("AccountId")}
               required
-              style={inputStyle}
             >
               <option value="">Select...</option>
               {activeAccounts.map((account) => (
@@ -119,7 +105,7 @@ function BankStatements() {
             </select>
           </div>
           <div>
-            <label style={labelStyle} htmlFor="stmt-date">
+            <label htmlFor="stmt-date">
               Statement Date
             </label>
             <input
@@ -128,11 +114,10 @@ function BankStatements() {
               value={form.StatementDate}
               onChange={handleFormChange("StatementDate")}
               required
-              style={inputStyle}
             />
           </div>
           <div>
-            <label style={labelStyle} htmlFor="stmt-reference">
+            <label htmlFor="stmt-reference">
               Reference
             </label>
             <input
@@ -141,11 +126,10 @@ function BankStatements() {
               onChange={handleFormChange("Reference")}
               required
               maxLength={100}
-              style={inputStyle}
             />
           </div>
           <div>
-            <label style={labelStyle} htmlFor="stmt-starting-balance">
+            <label htmlFor="stmt-starting-balance">
               Starting Balance
             </label>
             <input
@@ -155,58 +139,53 @@ function BankStatements() {
               inputMode="decimal"
               placeholder="0.00"
               required
-              style={inputStyle}
             />
           </div>
         </div>
 
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table className="table">
           <thead>
             <tr>
-              <th style={thStyle}>Date</th>
-              <th style={thStyle}>Description</th>
-              <th style={thStyle}>Amount</th>
-              <th style={thStyle} />
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th />
             </tr>
           </thead>
           <tbody>
             {lines.map((line, index) => (
               <tr key={line.key}>
-                <td style={tdStyle}>
+                <td>
                   <input
                     type="date"
                     value={line.Date}
                     onChange={(event) => updateLine(line.key, "Date", event.target.value)}
                     required
-                    style={inputStyle}
                     aria-label={`Line ${index + 1} date`}
                   />
                 </td>
-                <td style={tdStyle}>
+                <td>
                   <input
                     value={line.Description}
                     onChange={(event) => updateLine(line.key, "Description", event.target.value)}
                     required
                     maxLength={500}
-                    style={inputStyle}
                     aria-label={`Line ${index + 1} description`}
                   />
                 </td>
-                <td style={tdStyle}>
+                <td>
                   <input
                     value={line.Amount}
                     onChange={(event) => updateLine(line.key, "Amount", event.target.value)}
                     inputMode="decimal"
                     placeholder="e.g. 250.00 or -75.25"
-                    style={inputStyle}
                     aria-label={`Line ${index + 1} amount`}
                   />
                 </td>
-                <td style={tdStyle}>
+                <td>
                   <button
                     type="button"
                     onClick={() => removeLine(line.key)}
-                    style={{ padding: "4px 8px", cursor: "pointer" }}
                   >
                     Remove
                   </button>
@@ -216,55 +195,48 @@ function BankStatements() {
           </tbody>
         </table>
 
-        <button type="button" onClick={addLine} style={{ marginTop: "8px", padding: "6px 12px" }}>
+        <button type="button" onClick={addLine}>
           + Add Line
         </button>
 
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "12px 16px",
-            background: "#f9fafb",
-            borderRadius: "6px",
-          }}
-        >
+        <div className="summary-bar">
           <strong>Ending Balance:</strong> {fromMinorUnits(endingBalanceMinor)}
         </div>
 
-        {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
+        {formError && <p className="msg msg-error">{formError}</p>}
 
-        <button type="submit" disabled={!canSave} style={{ marginTop: "16px", padding: "10px 20px" }}>
+        <button type="submit" disabled={!canSave}>
           {isSubmitting ? "Saving..." : "Save Statement"}
         </button>
       </form>
 
-      <h3 style={{ marginTop: "32px" }}>Existing Statements</h3>
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      <h3>Existing Statements</h3>
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading statements...</p>
       ) : statements.length === 0 ? (
-        <p style={{ color: "#6b7280" }}>No bank statements yet.</p>
+        <p className="msg msg-muted">No bank statements yet.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "12px" }}>
+        <table className="table">
           <thead>
             <tr>
-              <th style={thStyle}>Reference</th>
-              <th style={thStyle}>Account</th>
-              <th style={thStyle}>Statement Date</th>
-              <th style={thStyle}>Starting Balance</th>
-              <th style={thStyle}>Ending Balance</th>
+              <th>Reference</th>
+              <th>Account</th>
+              <th>Statement Date</th>
+              <th>Starting Balance</th>
+              <th>Ending Balance</th>
             </tr>
           </thead>
           <tbody>
             {statements.map((statement) => (
               <tr key={statement.Id}>
-                <td style={tdStyle}>{statement.Reference}</td>
-                <td style={tdStyle}>
+                <td>{statement.Reference}</td>
+                <td>
                   {statement.Account ? `${statement.Account.Code} — ${statement.Account.Name}` : "—"}
                 </td>
-                <td style={tdStyle}>{statement.StatementDate}</td>
-                <td style={tdStyle}>{statement.StartingBalance}</td>
-                <td style={tdStyle}>{statement.EndingBalance}</td>
+                <td>{statement.StatementDate}</td>
+                <td>{statement.StartingBalance}</td>
+                <td>{statement.EndingBalance}</td>
               </tr>
             ))}
           </tbody>

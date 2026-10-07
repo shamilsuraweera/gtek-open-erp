@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import App from "./App";
 import apiClient, { TOKEN_STORAGE_KEY } from "./api/client";
 
@@ -77,7 +78,9 @@ test("renders the command center dashboard once authenticated", async () => {
   expect(screen.getByText("Acme Corp")).toBeInTheDocument();
   expect(screen.getByText("BILL-2026-1")).toBeInTheDocument();
   expect(screen.getByText("Acme Supplies")).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: /security \/ users/i })).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole("link", { name: "Settings" }));
+  expect(await screen.findByRole("link", { name: /security \/ users/i })).toBeInTheDocument();
 });
 
 test("hides the Security / Users link from non-admin users", async () => {
@@ -97,6 +100,8 @@ test("hides the Security / Users link from non-admin users", async () => {
   render(<App />);
 
   expect(await screen.findByText("Revenue This Month")).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("link", { name: "Settings" }));
+  expect(await screen.findByRole("link", { name: "General" })).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: /security \/ users/i })).not.toBeInTheDocument();
 });
 

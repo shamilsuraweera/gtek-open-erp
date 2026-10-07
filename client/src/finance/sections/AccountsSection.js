@@ -2,8 +2,6 @@ import { useState } from "react";
 import ReferenceDataTable from "../components/ReferenceDataTable";
 
 const ACCOUNT_TYPES = ["Asset", "Liability", "Equity", "Income", "Expense"];
-const inputStyle = { padding: "8px", boxSizing: "border-box" };
-const labelStyle = { display: "block", fontSize: "13px", marginBottom: "4px", color: "#374151" };
 
 const EMPTY_FORM = { Code: "", Name: "", Type: ACCOUNT_TYPES[0], ParentId: "" };
 
@@ -49,34 +47,30 @@ function AccountsSection({ accountsData }) {
 
   return (
     <div>
-      <h2>Chart of Accounts</h2>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <form onSubmit={handleSubmit} className="form-row">
         <div>
-          <label style={labelStyle} htmlFor="account-code">Code</label>
+          <label htmlFor="account-code">Code</label>
           <input
             id="account-code"
             value={form.Code}
             onChange={handleChange("Code")}
             required
             maxLength={20}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="account-name">Name</label>
+          <label htmlFor="account-name">Name</label>
           <input
             id="account-name"
             value={form.Name}
             onChange={handleChange("Name")}
             required
             maxLength={200}
-            style={inputStyle}
           />
         </div>
         <div>
-          <label style={labelStyle} htmlFor="account-type">Type</label>
-          <select id="account-type" value={form.Type} onChange={handleChange("Type")} style={inputStyle}>
+          <label htmlFor="account-type">Type</label>
+          <select id="account-type" value={form.Type} onChange={handleChange("Type")}>
             {ACCOUNT_TYPES.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -85,12 +79,11 @@ function AccountsSection({ accountsData }) {
           </select>
         </div>
         <div>
-          <label style={labelStyle} htmlFor="account-parent">Parent (optional)</label>
+          <label htmlFor="account-parent">Parent (optional)</label>
           <select
             id="account-parent"
             value={form.ParentId}
             onChange={handleChange("ParentId")}
-            style={inputStyle}
           >
             <option value="">— none —</option>
             {activeAccounts.map((account) => (
@@ -100,13 +93,13 @@ function AccountsSection({ accountsData }) {
             ))}
           </select>
         </div>
-        <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Account"}
         </button>
       </form>
 
-      {formError && <p style={{ color: "#dc2626" }}>{formError}</p>}
-      {error && <p style={{ color: "#dc2626" }}>{error}</p>}
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {error && <p className="msg msg-error">{error}</p>}
       {isLoading ? (
         <p>Loading accounts...</p>
       ) : (
