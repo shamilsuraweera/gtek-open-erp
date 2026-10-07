@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
-import Profile from "./Profile";
+import AccountDialog from "./AccountDialog";
+import { PreferencesProvider } from "../context/PreferencesContext";
 import apiClient from "../api/client";
 
 const mockApplyProfile = jest.fn();
+const mockClose = jest.fn();
 
 jest.mock("../api/client", () => ({
   __esModule: true,
@@ -20,20 +21,21 @@ jest.mock("../context/AuthContext", () => ({
 
 function renderProfile() {
   return render(
-    <MemoryRouter>
-      <Profile />
-    </MemoryRouter>,
+    <PreferencesProvider>
+      <AccountDialog onClose={mockClose} />
+    </PreferencesProvider>,
   );
 }
 
 beforeEach(() => {
   jest.clearAllMocks();
+  localStorage.clear();
   apiClient.get.mockResolvedValue({
     data: { Email: "ada@gtek.dev", DisplayName: null, CreatedAt: "2026-01-02T00:00:00.000Z" },
   });
 });
 
-describe("Profile", () => {
+describe("AccountDialog", () => {
   it("saves the display name and email, then refreshes the shared profile", async () => {
     const saved = { Email: "ada@gtek.dev", DisplayName: "Ada Perera" };
     apiClient.patch.mockResolvedValue({ data: saved });
@@ -82,5 +84,22 @@ describe("Profile", () => {
       NewPassword: "newpassword1",
     });
     expect(await screen.findByText("Password changed.")).toBeInTheDocument();
+  });
+
+  it("switches the theme and remembers it", async () => {
+    renderProfile();
+
+    await userEvent.click(await screen.findByRole("radio", { name: /dark/i }));
+
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+    expect(JSON.parse(localStorage.getItem("gtek_prefs")).theme).toBe("dark");
+  });
+
+  it("closes on Escape", async () => {
+    renderProfile();
+    await screen.findByRole("dialog");
+
+    await userEvent.keyboard("{Escape}");
+    expect(mockClose).toHaveBeenCalled();
   });
 });

@@ -5,6 +5,16 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0f172a" />
+    <script>
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem("gtek_prefs") || "{}");
+          var dark = p.theme === "dark" || ((!p.theme || p.theme === "system") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+          if (p.density) document.documentElement.setAttribute("data-density", p.density);
+        } catch (e) {}
+      })();
+    </script>
     <meta
       name="description"
       content="G-TEK ERP - finance, sales, purchasing, inventory and banking"

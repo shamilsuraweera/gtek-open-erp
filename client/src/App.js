@@ -13,12 +13,14 @@ import Contacts from "./contacts/Contacts";
 import Invoices from "./sales/Invoices";
 import VendorBills from "./purchasing/VendorBills";
 import UserAdmin from "./users/UserAdmin";
-import Profile from "./settings/Profile";
+import GeneralSettings from "./settings/GeneralSettings";
+import { PreferencesProvider } from "./context/PreferencesContext";
 import BankStatements from "./banking/BankStatements";
 import ReconciliationDashboard from "./banking/ReconciliationDashboard";
 
 function App() {
   return (
+    <PreferencesProvider>
     <BrowserRouter>
       <AuthProvider>
         <Routes>
@@ -58,8 +60,9 @@ function App() {
             </Route>
 
             <Route path="/settings">
-              <Route index element={<Navigate to="profile" replace />} />
-              <Route path="profile" element={<Profile />} />
+              <Route index element={<Navigate to="general" replace />} />
+              <Route path="general" element={<GeneralSettings />} />
+              <Route path="profile" element={<Navigate to="/settings/general" replace />} />
               <Route
                 path="users"
                 element={
@@ -78,6 +81,7 @@ function App() {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </PreferencesProvider>
   );
 }
 

@@ -1,44 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import AccountDialog from "./AccountDialog";
 import { useAuth } from "../context/AuthContext";
 import Icon from "./Icon";
 import { useDismiss } from "./useDismiss";
-
-export function getDisplayName(user) {
-  if (!user) {
-    return "";
-  }
-  return user.displayName || (user.email ? user.email.split("@")[0] : "User");
-}
-
-export function getInitials(user) {
-  const name = getDisplayName(user).trim();
-  if (!name) {
-    return "?";
-  }
-  const parts = name.split(/[\s._-]+/).filter(Boolean);
-  const letters = parts.length > 1 ? parts[0][0] + parts[1][0] : name.slice(0, 2);
-  return letters.toUpperCase();
-}
-
-export function Avatar({ user, size = 34 }) {
-  return (
-    <span className="avatar" style={{ width: size, height: size, fontSize: Math.round(size * 0.38) }} aria-hidden="true">
-      {getInitials(user)}
-    </span>
-  );
-}
+import { Avatar, getDisplayName } from "./userDisplay";
 
 function ProfileMenu() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [right, setRight] = useState(16);
   const containerRef = useRef(null);
   const buttonRef = useRef(null);
 
   const close = useCallback(() => setOpen(false), []);
+  const closeAccount = useCallback(() => setAccountOpen(false), []);
   useDismiss(containerRef, open, close);
 
   useEffect(() => {
@@ -91,14 +70,18 @@ function ProfileMenu() {
               <span className="badge badge-neutral">{user.role}</span>
             </div>
           </div>
-          <Link role="menuitem" className="menu-item" to="/settings/profile">
+          <button
+            type="button"
+            role="menuitem"
+            className="menu-item"
+            onClick={() => {
+              setOpen(false);
+              setAccountOpen(true);
+            }}
+          >
             <Icon name="user" size={18} />
-            Edit profile
-          </Link>
-          <Link role="menuitem" className="menu-item" to="/settings/profile#password">
-            <Icon name="lock" size={18} />
-            Change password
-          </Link>
+            My account &amp; preferences
+          </button>
           <div className="menu-divider" role="separator" />
           <button type="button" role="menuitem" className="menu-item menu-item-danger" onClick={handleLogout}>
             <Icon name="logout" size={18} />
@@ -106,6 +89,7 @@ function ProfileMenu() {
           </button>
         </div>
       )}
+      {accountOpen && <AccountDialog onClose={closeAccount} />}
     </div>
   );
 }

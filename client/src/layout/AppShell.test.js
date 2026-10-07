@@ -26,7 +26,7 @@ function renderShell(path, role = "Admin") {
           <Route element={<AppShell />}>
             <Route path="/" element={<p>dashboard body</p>} />
             <Route path="/finance/reports" element={<p>reports body</p>} />
-            <Route path="/settings/profile" element={<p>profile body</p>} />
+            <Route path="/settings/general" element={<p>general body</p>} />
             <Route path="/settings/users" element={<p>users body</p>} />
           </Route>
         </Routes>
@@ -82,25 +82,36 @@ describe("AppShell", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: /account menu/i }));
     expect(await screen.findByText("ada@gtek.dev")).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: /edit profile/i })).toHaveAttribute("href", "/settings/profile");
+    expect(screen.getByRole("menuitem", { name: /account & preferences/i })).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("menuitem", { name: /log out/i }));
     expect(await screen.findByRole("heading", { name: "Login page" })).toBeInTheDocument();
     expect(localStorage.getItem(TOKEN_STORAGE_KEY)).toBeNull();
   });
 
+  it("opens the account popup from the profile menu", async () => {
+    renderShell("/");
+
+    await userEvent.click(await screen.findByRole("button", { name: /account menu/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /account & preferences/i }));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByRole("radio", { name: /light/i })).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("Display name")).toBeInTheDocument();
+  });
+
   it("shows Settings as one sidebar link with its tabs in the ribbon", async () => {
     renderShell("/settings/users");
 
     expect(await screen.findAllByRole("link", { name: "Security / Users" })).toHaveLength(1);
-    expect(screen.getAllByRole("link", { name: "My Profile" })).toHaveLength(1);
+    expect(screen.getAllByRole("link", { name: "General" })).toHaveLength(1);
     expect(screen.getAllByRole("link", { name: "Settings" })).toHaveLength(1);
   });
 
   it("hides the admin-only Settings link from regular users", async () => {
-    renderShell("/settings/profile", "User");
+    renderShell("/settings/general", "User");
 
-    expect(await screen.findByRole("link", { name: "My Profile" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "General" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /security \/ users/i })).not.toBeInTheDocument();
   });
 });

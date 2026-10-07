@@ -91,7 +91,7 @@ export const SETTINGS_MODULE = {
   icon: "settings",
   basePath: "/settings",
   tabs: [
-    { label: "My Profile", to: "/settings/profile" },
+    { label: "General", to: "/settings/general" },
     { label: "Security / Users", to: "/settings/users", role: "Admin" },
   ],
 };

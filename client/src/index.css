@@ -34,11 +34,87 @@
   --sidebar-text: #cbd5e1;
   --sidebar-muted: #64748b;
 
+  --hover: #f1f5f9;
+  --row-line: #eef2f7;
+  --row-hover: #fafcff;
+  --row-selected: #dbeafe;
+  --segment-bg: #e8edf4;
+  --badge-neutral-bg: #e2e8f0;
+  --danger-border: #fecaca;
+  --success-border: #bbf7d0;
+  color-scheme: light;
+
   --radius: 10px;
   --radius-sm: 6px;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
   --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+/* Dark theme: same tokens, darker values. Set via <html data-theme="dark">. */
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --surface: #111a2c;
+  --surface-2: #162036;
+  --border: #223049;
+  --border-strong: #33435f;
+  --text: #e6edf7;
+  --text-2: #c3cfe2;
+  --muted: #8da0bd;
+  --faint: #62748f;
+
+  --primary: #4f8cff;
+  --primary-hover: #6b9fff;
+  --primary-soft: rgba(79, 140, 255, 0.14);
+  --primary-ring: rgba(79, 140, 255, 0.35);
+
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.14);
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.14);
+
+  --sidebar-bg: #070d19;
+  --sidebar-hover: #131d31;
+
+  --hover: #1a2640;
+  --row-line: #1b2740;
+  --row-hover: #15203a;
+  --row-selected: rgba(79, 140, 255, 0.22);
+  --segment-bg: #0d1626;
+  --badge-neutral-bg: #25324b;
+  --danger-border: rgba(248, 113, 113, 0.4);
+  --success-border: rgba(74, 222, 128, 0.4);
+  color-scheme: dark;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="dark"] .main button[type="submit"],
+:root[data-theme="dark"] .main .btn-primary,
+:root[data-theme="dark"] .auth button[type="submit"],
+:root[data-theme="dark"] .btn-link-primary {
+  color: #0b1220;
+}
+
+/* Compact density: tighter controls and table rows. */
+:root[data-density="compact"] .main input:not([type="checkbox"]):not([type="radio"]),
+:root[data-density="compact"] .main select,
+:root[data-density="compact"] .main button {
+  height: 30px;
+}
+
+:root[data-density="compact"] .table th,
+:root[data-density="compact"] .table td {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+:root[data-density="compact"] .main {
+  padding-top: 16px;
 }
 
 *,

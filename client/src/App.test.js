@@ -101,7 +101,7 @@ test("hides the Security / Users link from non-admin users", async () => {
 
   expect(await screen.findByText("Revenue This Month")).toBeInTheDocument();
   await userEvent.click(screen.getByRole("link", { name: "Settings" }));
-  expect(await screen.findByRole("link", { name: "My Profile" })).toBeInTheDocument();
+  expect(await screen.findByRole("link", { name: "General" })).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: /security \/ users/i })).not.toBeInTheDocument();
 });
 

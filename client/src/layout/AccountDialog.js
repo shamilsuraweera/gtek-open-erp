@@ -1,15 +1,25 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import apiClient from "../api/client";
 import { useAuth } from "../context/AuthContext";
-import { Avatar, getDisplayName } from "../layout/ProfileMenu";
-import "./profile.css";
+import { usePreferences } from "../context/PreferencesContext";
+import Icon from "./Icon";
+import { Avatar, getDisplayName } from "./userDisplay";
+import "./account.css";
 
 const EMPTY_PASSWORDS = { CurrentPassword: "", NewPassword: "", Confirm: "" };
 
-function Profile() {
+const THEMES = [
+  { value: "light", label: "Light", hint: "Bright and clean" },
+  { value: "dark", label: "Dark", hint: "Easy on the eyes" },
+  { value: "system", label: "System", hint: "Match this device" },
+];
+
+// Popup for the signed-in user's own details, preferences and password.
+function AccountDialog({ onClose }) {
   const { user, applyProfile } = useAuth();
-  const location = useLocation();
+  const { prefs, setPref } = usePreferences();
+  const dialogRef = useRef(null);
 
   const [form, setForm] = useState({ DisplayName: user?.displayName ?? "", Email: user?.email ?? "" });
   const [createdAt, setCreatedAt] = useState(null);
@@ -42,10 +52,20 @@ function Profile() {
   }, []);
 
   useEffect(() => {
-    if (location.hash === "#password") {
-      document.getElementById("password")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-    }
-  }, [location.hash]);
+    const onKey = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.focus();
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
 
   const handleProfileSubmit = async (event) => {
     event.preventDefault();
@@ -93,25 +113,54 @@ function Profile() {
 
   const previewUser = { ...user, displayName: form.DisplayName.trim() || null, email: form.Email };
 
-  return (
-    <div className="profile-page">
+  return createPortal(
+    <div
+      className="modal-backdrop"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="account-title" tabIndex={-1} ref={dialogRef}>
+        <div className="modal-head">
+          <Avatar user={previewUser} size={48} />
+          <div className="modal-head-text">
+            <h2 id="account-title">{getDisplayName(previewUser)}</h2>
+            <p>
+              {user?.role}
+              {createdAt ? ` · Member since ${new Date(createdAt).toLocaleDateString()}` : ""}
+            </p>
+          </div>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
+            <Icon name="close" />
+          </button>
+        </div>
 
-      <div className="profile-grid">
-        <section className="card profile-summary" aria-label="Account summary">
-          <Avatar user={previewUser} size={72} />
-          <h2>{getDisplayName(previewUser)}</h2>
-          <p className="card-sub">{form.Email}</p>
-          <span className="badge badge-neutral">{user?.role}</span>
-          {createdAt && (
-            <p className="profile-since">Member since {new Date(createdAt).toLocaleDateString()}</p>
-          )}
-        </section>
+        <div className="modal-body">
+          <section className="modal-section" aria-label="Preferences">
+            <h3>Appearance</h3>
+            <p className="card-sub">Applies to this browser only.</p>
+            <div className="choice-group" role="radiogroup" aria-label="Theme">
+              {THEMES.map((theme) => (
+                <button
+                  key={theme.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={prefs.theme === theme.value}
+                  className={`choice${prefs.theme === theme.value ? " selected" : ""}`}
+                  onClick={() => setPref("theme", theme.value)}
+                >
+                  <strong>{theme.label}</strong>
+                  <span>{theme.hint}</span>
+                </button>
+              ))}
+            </div>
+          </section>
 
-        <div className="profile-forms">
-          <form className="card" onSubmit={handleProfileSubmit} aria-label="Edit profile">
-            <h2 className="card-title">Personal details</h2>
+          <form className="modal-section" onSubmit={handleProfileSubmit} aria-label="Edit profile">
+            <h3>Personal details</h3>
             <p className="card-sub">This is how you appear across G-TEK ERP.</p>
-
             <div className="stack">
               <div>
                 <label htmlFor="profile-display-name">Display name</label>
@@ -134,10 +183,6 @@ function Profile() {
                   onChange={(event) => setForm({ ...form, Email: event.target.value })}
                 />
               </div>
-              <div>
-                <label htmlFor="profile-role">Role</label>
-                <input id="profile-role" value={user?.role ?? ""} disabled readOnly />
-              </div>
             </div>
 
             {profileError && <p className="msg msg-error">{profileError}</p>}
@@ -146,7 +191,6 @@ function Profile() {
                 Profile updated.
               </p>
             )}
-
             <div className="form-actions">
               <button type="submit" disabled={isSavingProfile}>
                 {isSavingProfile ? "Saving..." : "Save changes"}
@@ -154,10 +198,9 @@ function Profile() {
             </div>
           </form>
 
-          <form className="card" id="password" onSubmit={handlePasswordSubmit} aria-label="Change password">
-            <h2 className="card-title">Change password</h2>
+          <form className="modal-section" onSubmit={handlePasswordSubmit} aria-label="Change password">
+            <h3>Change password</h3>
             <p className="card-sub">Use at least 8 characters. You stay signed in on this device.</p>
-
             <div className="stack">
               <div>
                 <label htmlFor="current-password">Current password</label>
@@ -202,7 +245,6 @@ function Profile() {
                 Password changed.
               </p>
             )}
-
             <div className="form-actions">
               <button type="submit" disabled={isSavingPassword}>
                 {isSavingPassword ? "Updating..." : "Update password"}
@@ -211,8 +253,9 @@ function Profile() {
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
-export default Profile;
+export default AccountDialog;

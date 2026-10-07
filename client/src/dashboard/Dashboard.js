@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { usePreferences } from "../context/PreferencesContext";
 import Icon from "../layout/Icon";
 import { MODULES } from "../layout/navigation";
-import { getDisplayName } from "../layout/ProfileMenu";
+import { getDisplayName } from "../layout/userDisplay";
 import { statusBadgeClass } from "../layout/status";
 import { useDashboard } from "./useDashboard";
 import "./dashboard.css";
@@ -10,19 +11,19 @@ import "./dashboard.css";
 // Display-only formatting (never further arithmetic on the result), so
 // parsing through a JS Number here is safe — this is not one of the
 // money.js exact-decimal computation paths.
-function formatCurrency(value) {
+function formatCurrency(value, symbol = "$") {
   const number = Number(value ?? 0);
   const sign = number < 0 ? "-" : "";
   const formatted = Math.abs(number).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  return `${sign}$${formatted}`;
+  return `${sign}${symbol}${formatted}`;
 }
 
 const APP_TILES = MODULES.filter((module) => module.key !== "dashboard");
 
-function RecentTable({ title, viewAllTo, columns, rows, emptyLabel }) {
+function RecentTable({ title, viewAllTo, columns, rows, emptyLabel, symbol }) {
   return (
     <section className="card dash-panel">
       <div className="dash-panel-head">
@@ -47,7 +48,7 @@ function RecentTable({ title, viewAllTo, columns, rows, emptyLabel }) {
               <tr key={row.id}>
                 <td>{row.number || <span className="text-faint">(unposted)</span>}</td>
                 <td>{row.party}</td>
-                <td className="num">{formatCurrency(row.amount)}</td>
+                <td className="num">{formatCurrency(row.amount, symbol)}</td>
                 <td>
                   <span className={statusBadgeClass(row.status)}>{row.status}</span>
                 </td>
@@ -62,6 +63,7 @@ function RecentTable({ title, viewAllTo, columns, rows, emptyLabel }) {
 
 function Dashboard() {
   const { user } = useAuth();
+  const { currencySymbol } = usePreferences();
   const { metrics, recentInvoices, recentVendorBills, isLoading, error } = useDashboard();
 
   return (
@@ -93,7 +95,7 @@ function Dashboard() {
               </span>
               <div>
                 <div className="kpi-label">Revenue This Month</div>
-                <div className="kpi-value">{formatCurrency(metrics.revenueThisMonth)}</div>
+                <div className="kpi-value">{formatCurrency(metrics.revenueThisMonth, currencySymbol)}</div>
               </div>
             </div>
             <div className="card kpi kpi-primary">
@@ -102,7 +104,7 @@ function Dashboard() {
               </span>
               <div>
                 <div className="kpi-label">Unpaid AR</div>
-                <div className="kpi-value">{formatCurrency(metrics.unpaidAR)}</div>
+                <div className="kpi-value">{formatCurrency(metrics.unpaidAR, currencySymbol)}</div>
               </div>
             </div>
             <div className="card kpi kpi-danger">
@@ -111,13 +113,14 @@ function Dashboard() {
               </span>
               <div>
                 <div className="kpi-label">Unpaid AP</div>
-                <div className="kpi-value">{formatCurrency(metrics.unpaidAP)}</div>
+                <div className="kpi-value">{formatCurrency(metrics.unpaidAP, currencySymbol)}</div>
               </div>
             </div>
           </div>
 
           <div className="dash-panels">
             <RecentTable
+              symbol={currencySymbol}
               title="Recent Sales"
               viewAllTo="/sales"
               columns={["Number", "Customer", "Amount", "Status"]}
@@ -131,6 +134,7 @@ function Dashboard() {
               }))}
             />
             <RecentTable
+              symbol={currencySymbol}
               title="Recent Purchases"
               viewAllTo="/purchasing"
               columns={["Number", "Vendor", "Amount", "Status"]}
