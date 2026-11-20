@@ -43,7 +43,7 @@
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -97,7 +97,7 @@
 
 .dash-panels {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -142,7 +142,7 @@
 
 .app-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
   gap: 12px;
 }
 
@@ -185,5 +185,18 @@
 @media (max-width: 560px) {
   .dash-panels {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dash-actions {
+    width: 100%;
+  }
+
+  .dash-actions .btn-link {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .kpi-value {
+    font-size: 24px;
   }
 }

@@ -458,9 +458,12 @@
 }
 
 @media (max-width: 900px) {
+  /* The sidebar is position:fixed here, so it leaves the grid; without a
+     single-column template the body would land in a zero-width column. */
   .shell,
   .shell.sidebar-collapsed {
     --sidebar-w: 0px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .sidebar {
@@ -480,8 +483,14 @@
     box-shadow: var(--shadow-lg);
   }
 
-    .sidebar-collapse {
+  .sidebar-collapse {
     display: none;
+  }
+
+  .sidebar.is-collapsed .brand-text,
+  .sidebar.is-collapsed .nav-label,
+  .sidebar.is-collapsed .nav-section-label {
+    display: revert;
   }
 
   .main {
@@ -512,5 +521,25 @@
   .menu-profile {
     top: 54px;
   }
+}
 
+@media (max-width: 480px) {
+  .main {
+    padding: 12px 12px 32px;
+  }
+
+  .ribbon-module span {
+    max-width: 38vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sidebar {
+    width: min(272px, 86vw);
+  }
+
+  .menu {
+    max-width: calc(100vw - 16px);
+  }
 }
