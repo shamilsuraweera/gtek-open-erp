@@ -207,3 +207,22 @@
   margin: 0;
   word-break: break-all;
 }
+
+@media (max-width: 480px) {
+  .modal-backdrop {
+    padding: 8px;
+  }
+
+  .modal-head {
+    padding: 16px;
+  }
+
+  .about-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .about-list dd {
+    margin-bottom: 8px;
+  }
+}
